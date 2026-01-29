@@ -1,8 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
+
 import {
   Card,
   CardContent,
@@ -11,44 +10,49 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { GoogleSignInForm } from "@/app/auth/google/sign-in";
 import { BackLink } from "./auth/backlink";
 import { Or } from "./auth/or";
+import { Controller, useForm } from "react-hook-form";
+import { LoginFormType } from "@/app/types/auth.type";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginFormSchema } from "@/app/validators/auth.validator";
+import { Field, FieldError, FieldGroup, FieldLabel } from "./ui/field";
+
+import { Button } from "./ui/button";
 import { Required } from "./required-span";
+import { login } from "@/app/services/auth/login";
+import { toastError } from "@/app/utils/toast";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const form = useForm<LoginFormType>({
+    resolver: zodResolver(loginFormSchema),
+    mode: "onSubmit",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    const supabase = createClient();
-    setIsLoading(true);
-    setError(null);
 
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-      // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push("/protected");
-    } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
-    } finally {
-      setIsLoading(false);
+    const email = form.getValues("email");
+    const password = form.getValues("password");
+
+    const { error } = await login({ email, password });
+
+    if (error) {
+      toastError(error, "bottom-right");
     }
+
+    router.push("/dashboard");
   };
 
   return (
@@ -61,53 +65,60 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email">
-                  Email <Required />
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="email@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">
-                    Password <Required />
-                  </Label>
-                  <Link
-                    href="/auth/forgot-password"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-muted-foreground"
-                  >
-                    Forgot your password?
-                  </Link>
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button
-                type="submit"
-                className="w-full mb-5"
-                disabled={isLoading}
-              >
-                {isLoading ? "Logging in..." : "Login"}
+          <form id="login-form" onSubmit={handleLogin} className="mb-6">
+            <FieldGroup className="gap-5">
+              <Controller
+                name="email"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="email" className="gap-1">
+                      Email
+                      <Required />
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="email"
+                      aria-invalid={fieldState.invalid}
+                      placeholder="email@example.com"
+                      autoComplete="off"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="password"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="password" className="gap-1">
+                      Password
+                      <Required />
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="password"
+                      aria-invalid={fieldState.invalid}
+                      placeholder="Enter password"
+                      autoComplete="off"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </FieldGroup>
+            <Field orientation="horizontal" className="mt-4">
+              <Button type="submit" form="login-form" className="w-full">
+                Login
               </Button>
-            </div>
-            <Or />
+            </Field>
           </form>
+          <Or />
           <GoogleSignInForm />
           <BackLink>
             Don&apos;t have an account?{" "}
