@@ -14,3 +14,18 @@ export const loginFormSchema = z.object({
     password: z.string(),
 });
 
+
+export const registerFormSchema = z.object({
+    email: z.string(),
+    password: passwordSchema,
+    password_confirmation: z.string(),
+}).superRefine((data, ctx) => {
+    if (data.password !== data.password_confirmation) {
+        ctx.addIssue({
+            code: 'custom',
+            message: 'must match password above',
+            path: ["password_confirmation"],
+        })
+    }
+});
+

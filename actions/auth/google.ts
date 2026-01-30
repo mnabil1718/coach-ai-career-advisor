@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 
 export const signInWithGoogle = async () => {
   const origin = (await headers()).get("origin");
-  console.log("ORIGIN", origin);
+
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
@@ -15,8 +15,9 @@ export const signInWithGoogle = async () => {
     },
   });
 
-  console.error("ERROR", error);
-  console.error("DATA", data);
+  if (error) {
+    throw error;
+  }
 
   if (data.url) {
     redirect(data.url);

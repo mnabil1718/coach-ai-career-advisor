@@ -13,18 +13,19 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { GoogleSignInForm } from "@/app/auth/google/sign-in";
-import { BackLink } from "./auth/backlink";
-import { Or } from "./auth/or";
+import { BackLink } from "./backlink";
+import { Or } from "./or";
 import { Controller, useForm } from "react-hook-form";
-import { LoginFormType } from "@/app/types/auth.type";
+import { LoginFormType } from "@/types/auth.type";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginFormSchema } from "@/app/validators/auth.validator";
-import { Field, FieldError, FieldGroup, FieldLabel } from "./ui/field";
+import { loginFormSchema } from "@/schema/auth.schema";
+import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 
-import { Button } from "./ui/button";
-import { Required } from "./required-span";
-import { login } from "@/app/services/auth/login";
-import { toastError } from "@/app/utils/toast";
+import { Button } from "../ui/button";
+import { Required } from "../form/required-span";
+import { login } from "@/services/auth/login.service";
+import { toastError } from "@/utils/toast";
+import { PasswordField } from "../form/password-field";
 
 export function LoginForm({
   className,
@@ -40,14 +41,11 @@ export function LoginForm({
     },
   });
 
-  const handleLogin = async (e: React.SubmitEvent) => {
-    e.preventDefault();
-
-    const email = form.getValues("email");
+  const handleLogin = async (data: LoginFormType) => {
+    const email = data.email;
     const password = form.getValues("password");
 
     const { error } = await login({ email, password });
-
     if (error) {
       toastError(error, "bottom-right");
     }
@@ -65,7 +63,11 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form id="login-form" onSubmit={handleLogin} className="mb-6">
+          <form
+            id="login-form"
+            onSubmit={form.handleSubmit(handleLogin)}
+            className="mb-6"
+          >
             <FieldGroup className="gap-5">
               <Controller
                 name="email"
@@ -89,28 +91,7 @@ export function LoginForm({
                   </Field>
                 )}
               />
-              <Controller
-                name="password"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="password" className="gap-1">
-                      Password
-                      <Required />
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id="password"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Enter password"
-                      autoComplete="off"
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
+              <PasswordField name="password" control={form.control} />
             </FieldGroup>
             <Field orientation="horizontal" className="mt-4">
               <Button type="submit" form="login-form" className="w-full">

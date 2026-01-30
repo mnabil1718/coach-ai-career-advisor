@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useState } from "react";
 import { BackLink } from "./auth/backlink";
-import { Required } from "./required-span";
+import { Required } from "./form/required-span";
 
 export function ForgotPasswordForm({
   className,

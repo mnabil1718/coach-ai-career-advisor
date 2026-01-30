@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { ThemeSwitcher } from "./theme-switcher";
-import { AuthButton } from "./auth-button";
+import { AuthButton } from "./auth/auth-button";
 
 export function Navbar() {
   return (

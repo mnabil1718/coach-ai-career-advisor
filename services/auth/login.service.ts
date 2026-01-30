@@ -1,6 +1,6 @@
 'use server'
 
-import { ActionResult } from "@/app/types/action.type";
+import { ActionResult } from "@/types/action.type";
 import { createClient } from "@/lib/supabase/server";
 
 export async function login({ email, password }: { email: string, password: string }): Promise<ActionResult<void>> {
@@ -11,8 +11,8 @@ export async function login({ email, password }: { email: string, password: stri
       });
 
       if (error) {
-        return { error: error.message, success: false };
+        return { error: error.message };
       }
 
-      return { success: true, error: null };
+      return { error: null };
 }
