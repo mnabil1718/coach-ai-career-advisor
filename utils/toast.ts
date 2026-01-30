@@ -13,9 +13,9 @@ export function toastLoading(msg: string, dir: ToastPosition = "top-center", id:
         return;
     }
 
-    let seconds = 0;
+    let seconds = 1;
     
-    toast.loading(`${msg}       (${seconds}s)`, { id, position: dir });
+    toast.loading(`${msg} (${seconds}s)`, { id, position: dir });
 
     toastInterval = setInterval(() => {
         seconds++;

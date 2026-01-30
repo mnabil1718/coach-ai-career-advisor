@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { type FileError, type FileRejection, useDropzone } from 'react-dropzone'
+import { nanoid } from "nanoid";
 
 const supabase = createClient()
 
@@ -140,16 +141,17 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
 
     const responses = await Promise.all(
       filesToUpload.map(async (file) => {
+        const id = nanoid(6); // prevent duplicates
+        const filename = `${file.name}=${id}`;
         const { error } = await supabase.storage
           .from(bucketName)
-          .upload(!!path ? `${path}/${file.name}` : file.name, file, {
+          .upload(!!path ? `${path}/${filename}` : filename, file, {
             cacheControl: cacheControl.toString(),
             upsert,
           })
         if (error) {
           return { name: file.name, message: error.message }
         } else {
-
           uploadedFiles.push({ file, message: undefined });
           return { name: file.name, message: undefined }
         }
