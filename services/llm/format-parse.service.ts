@@ -1,5 +1,6 @@
 "use server"
 
+import { GEMINI_3_FLASH } from "@/constants/model";
 import { ai } from "@/lib/gemini/gemini";
 import { ResumeSchema } from "@/schema/resume.schema";
 import { ActionResult } from "@/types/action.type";
@@ -20,7 +21,7 @@ const prompt = `
   try {
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-pro-preview",
+    model: GEMINI_3_FLASH,
     contents: prompt,
     config: {
         responseMimeType: "application/json",

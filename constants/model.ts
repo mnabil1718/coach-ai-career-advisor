@@ -1,0 +1,1 @@
+export const GEMINI_3_FLASH="gemini-3-flash-preview";
