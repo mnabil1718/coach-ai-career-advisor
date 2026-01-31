@@ -21,7 +21,7 @@ const features: FeatureCardProps[] = [
 
 export function Features() {
   return (
-    <section className="relative py-32 bg-accent/20 w-full p-3">
+    <section id="features" className="relative py-32 bg-accent/20 w-full p-3">
       <div className="z-10 mx-auto max-w-5xl">
         <header className="mb-16">
           <h1 className="text-2xl lg:text-4xl font-bold !leading-tight text-center mb-3">

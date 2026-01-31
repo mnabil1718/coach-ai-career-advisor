@@ -26,12 +26,14 @@ import { Required } from "../form/required-span";
 import { login } from "@/services/auth/login.service";
 import { toastError } from "@/utils/toast";
 import { PasswordField } from "../form/password-field";
+import { Brand } from "../brand";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
+
   const form = useForm<LoginFormType>({
     resolver: zodResolver(loginFormSchema),
     mode: "onSubmit",
@@ -57,6 +59,7 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
+          <Brand className="text-center mb-3" />
           <CardTitle className="text-2xl">Log into Your Account</CardTitle>
           <CardDescription>
             Enter your email & password to log in

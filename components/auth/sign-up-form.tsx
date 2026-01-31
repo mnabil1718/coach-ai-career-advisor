@@ -24,6 +24,7 @@ import { PasswordField } from "../form/password-field";
 import { Button } from "../ui/button";
 import { register } from "@/services/auth/register.service";
 import { toastError } from "@/utils/toast";
+import { Brand } from "../brand";
 
 export function SignUpForm({
   className,
@@ -50,6 +51,7 @@ export function SignUpForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
+          <Brand className="text-center mb-3" />
           <CardTitle className="text-2xl">Sign up</CardTitle>
           <CardDescription>Create a new account</CardDescription>
         </CardHeader>

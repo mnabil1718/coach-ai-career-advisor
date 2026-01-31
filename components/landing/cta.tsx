@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { Button } from "../ui/button";
 
 export function CTA() {
   return (
-    <section className="pb-32">
+    <section id="cta" className="pb-32">
       <div className="relative mx-auto max-w-5xl bg-primary text-background p-20 rounded-xl flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute z-10 inset-0 bg-primary/30 backdrop-blur-[100px]"></div>
         <CTAShimmerBG />
@@ -15,9 +16,14 @@ export function CTA() {
             aced their interviews with Coach.ai.
           </p>
 
-          <Button className="bg-background/80 hover:bg-background text-foreground p-7 font-bold transition-opacity duration-300 w-fit">
-            Upload your CV Now
-          </Button>
+          <Link href={"/dashboard"}>
+            <Button className="bg-background/80 hover:bg-background text-foreground p-7 font-bold transition-opacity duration-300 w-fit mb-3">
+              Upload your CV Now
+            </Button>
+          </Link>
+          <span className="text-background/80 font-medium text-sm">
+            Sign up now. No credit card required
+          </span>
         </div>
       </div>
     </section>

@@ -2,16 +2,9 @@ import { Suspense } from "react";
 import { Greeting } from "@/components/greeting";
 import { DocUpload } from "@/components/doc-upload";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function ProtectedPage() {
+export default function Dashboard() {
   return (
     <div className="flex-1 w-full flex flex-col gap-12">
       <div className="flex flex-col gap-2 items-center">

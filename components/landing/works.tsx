@@ -23,7 +23,7 @@ const items: WorksItemProps[] = [
 
 export function Works() {
   return (
-    <section className="py-32 w-full p-3">
+    <section id="works" className="py-32 w-full p-3">
       <div className="mx-auto max-w-5xl">
         <header className="mb-16">
           <h1 className="text-2xl lg:text-4xl font-bold !leading-tight text-center mb-3">

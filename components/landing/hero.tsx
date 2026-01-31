@@ -1,6 +1,10 @@
+"use client";
+
 import { ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
 import { Pill } from "./pill";
+import { scrollTo } from "@/utils/scroll";
+import Link from "next/link";
 
 export function Hero() {
   return (
@@ -29,20 +33,23 @@ export function HeroContent() {
       </p>
 
       <div className="flex flex-col sm:flex-row items-center gap-4">
-        <Button
-          size="lg"
-          className="relative h-14 px-8 text-base font-semibold rounded-full group overflow-hidden bg-primary text-primary-foreground transition-all duration-300"
-        >
-          {/* The "Hover" Gradient Layer */}
-          <span className="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <Link href={"/dashboard"}>
+          <Button
+            size="lg"
+            className="relative h-14 px-8 text-base font-semibold rounded-full group overflow-hidden bg-primary text-primary-foreground transition-all duration-300"
+          >
+            {/* The "Hover" Gradient Layer */}
+            <span className="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-          {/* The Content */}
-          <span className="relative z-10 flex items-center">
-            Start free session
-            <ArrowRight className="ml-2 size-5 group-hover:translate-x-1 transition-transform" />
-          </span>
-        </Button>
+            {/* The Content */}
+            <span className="relative z-10 flex items-center">
+              Start free session
+              <ArrowRight className="ml-2 size-5 group-hover:translate-x-1 transition-transform" />
+            </span>
+          </Button>
+        </Link>
         <Button
+          onClick={() => scrollTo("works")}
           variant="outline"
           size="lg"
           className="h-14 px-8 text-base rounded-full backdrop-blur-sm"
