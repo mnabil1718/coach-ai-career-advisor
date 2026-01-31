@@ -8,6 +8,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ICON_SIZE, ICON_STROKE_WIDTH } from "@/constants/theme";
 import { Laptop, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -25,19 +26,11 @@ const ThemeSwitcher = () => {
     return null;
   }
 
-  const ICON_SIZE = 16;
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={"outline"}>
-          {theme === "light" ? (
-            <Sun key="light" className={"text-muted-foreground"} />
-          ) : theme === "dark" ? (
-            <Moon key="dark" className={"text-muted-foreground"} />
-          ) : (
-            <Laptop key="system" className={"text-muted-foreground"} />
-          )}
+        <Button variant={"ghost"}>
+          <RenderIcon theme={theme} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-content" align="start">
@@ -49,21 +42,33 @@ const ThemeSwitcher = () => {
             className="flex gap-2 cursor-pointer"
             value="light"
           >
-            <Sun size={ICON_SIZE} className="text-muted-foreground" />{" "}
+            <Sun
+              size={ICON_SIZE}
+              strokeWidth={ICON_STROKE_WIDTH}
+              className="text-muted-foreground"
+            />{" "}
             <span>Light</span>
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem
             className="flex gap-2 cursor-pointer"
             value="dark"
           >
-            <Moon size={ICON_SIZE} className="text-muted-foreground" />{" "}
+            <Moon
+              size={ICON_SIZE}
+              strokeWidth={ICON_STROKE_WIDTH}
+              className="text-muted-foreground"
+            />{" "}
             <span>Dark</span>
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem
             className="flex gap-2 cursor-pointer"
             value="system"
           >
-            <Laptop size={ICON_SIZE} className="text-muted-foreground" />{" "}
+            <Laptop
+              size={ICON_SIZE}
+              strokeWidth={ICON_STROKE_WIDTH}
+              className="text-muted-foreground"
+            />{" "}
             <span>System</span>
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
@@ -71,5 +76,33 @@ const ThemeSwitcher = () => {
     </DropdownMenu>
   );
 };
+
+function RenderIcon({ theme }: { theme: string | undefined }) {
+  if (theme === "light") {
+    return (
+      <Sun
+        key="light"
+        strokeWidth={ICON_STROKE_WIDTH}
+        className={"text-muted-foreground"}
+      />
+    );
+  } else if (theme === "dark") {
+    return (
+      <Moon
+        key="dark"
+        strokeWidth={ICON_STROKE_WIDTH}
+        className={"text-muted-foreground"}
+      />
+    );
+  } else {
+    return (
+      <Laptop
+        key="system"
+        strokeWidth={ICON_STROKE_WIDTH}
+        className={"text-muted-foreground"}
+      />
+    );
+  }
+}
 
 export { ThemeSwitcher };

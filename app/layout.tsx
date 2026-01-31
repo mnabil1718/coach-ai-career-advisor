@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Google_Sans_Flex } from "next/font/google";
+import { Ubuntu_Sans } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description: "Your personalized virtual carrer coach",
 };
 
-const geistSans = Google_Sans_Flex({
+const geistSans = Ubuntu_Sans({
   variable: "--font-geist-sans",
   display: "swap",
   subsets: ["latin"],
