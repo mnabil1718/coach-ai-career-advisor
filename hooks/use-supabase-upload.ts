@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { type FileError, type FileRejection, useDropzone } from 'react-dropzone'
-import { nanoid } from "nanoid";
+import { generateUniqueFileName } from '@/utils/file';
 
 const supabase = createClient()
 
@@ -141,8 +141,7 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
 
     const responses = await Promise.all(
       filesToUpload.map(async (file) => {
-        const id = nanoid(6); // prevent duplicates
-        const filename = `${file.name}=${id}`;
+        const filename = generateUniqueFileName(file);
         const { error } = await supabase.storage
           .from(bucketName)
           .upload(!!path ? `${path}/${filename}` : filename, file, {

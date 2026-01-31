@@ -16,7 +16,7 @@ const TOAST_ID = "upload";
 export function DocUpload() {
   const props = useSupabaseUpload({
     bucketName: "uploads",
-    path: "",
+    path: "resumes",
     allowedMimeTypes: [
       "application/pdf",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
