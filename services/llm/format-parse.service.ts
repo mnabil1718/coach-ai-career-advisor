@@ -29,14 +29,15 @@ const prompt = `
     },    
   });
 
-  return { error: null, data: response.text }
+  return { data: response.text }
 
   } catch (err: unknown) {
+    
     if (err instanceof Error) {
-      return { error: err.message }
+      throw err;
     }
 
-    return { error: 'AI generation failed' }
+    throw new Error('AI generation failed');
   }
 
   

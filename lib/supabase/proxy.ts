@@ -1,4 +1,3 @@
-import { ALREADY_AUTHENTICATED_ERROR, UNAUTHENTICATED_ERROR } from "@/constants/search-params";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -50,7 +49,7 @@ export async function updateSession(request: NextRequest) {
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
-    url.searchParams.set("error", UNAUTHENTICATED_ERROR);
+    // url.searchParams.set("error", UNAUTHENTICATED_ERROR);
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);
   }
@@ -61,7 +60,7 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/auth")
   ) {
     const url = request.nextUrl.clone();
-    url.searchParams.set("error", ALREADY_AUTHENTICATED_ERROR);
+    // url.searchParams.set("error", ALREADY_AUTHENTICATED_ERROR);
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }

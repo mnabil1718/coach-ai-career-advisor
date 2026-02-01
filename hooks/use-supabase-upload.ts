@@ -11,7 +11,8 @@ interface FileWithPreview extends File {
 }
 
 export type UploadedFileResult = {
-  file: Blob;
+  name: string;
+  fullPath: string;
   message: string | undefined;
 };
 
@@ -142,7 +143,7 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
     const responses = await Promise.all(
       filesToUpload.map(async (file) => {
         const filename = generateUniqueFileName(file);
-        const { error } = await supabase.storage
+        const { data, error } = await supabase.storage
           .from(bucketName)
           .upload(!!path ? `${path}/${filename}` : filename, file, {
             cacheControl: cacheControl.toString(),
@@ -151,7 +152,7 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
         if (error) {
           return { name: file.name, message: error.message }
         } else {
-          uploadedFiles.push({ file, message: undefined });
+          uploadedFiles.push({ name: file.name, fullPath: data.fullPath, message: undefined });
           return { name: file.name, message: undefined }
         }
       })

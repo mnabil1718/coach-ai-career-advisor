@@ -215,7 +215,7 @@ const DropzoneContent = ({ className }: { className?: string }) => {
                 Uploading...
               </>
             ) : (
-              <>Upload & Parse</>
+              <>Upload</>
             )}
           </Button>
         </div>

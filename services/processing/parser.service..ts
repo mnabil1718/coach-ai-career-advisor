@@ -9,14 +9,14 @@ export async function parseFromArrayBuffer(file: Blob): Promise<ActionResult<str
     // const buffer = Buffer.from(arrayBuffer);
     const ast = await officeParser.parseOffice(arrayBuffer);
 
-    return { error: null, data: ast.toText() };
+    return { data: ast.toText() };
 
   } catch (err: unknown) {
 
     if (err instanceof Error) {
-        return { error: err.message };
+        throw err;
     }
 
-    return { error: 'Something went wrong' };
+    throw new Error("Something went wrong");
   }
 }

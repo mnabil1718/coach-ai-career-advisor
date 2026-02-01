@@ -11,20 +11,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { logout } from "@/services/auth/logout.service";
 import { getInitials } from "@/utils/name";
-import { toastError } from "@/utils/toast";
 import { JwtPayload } from "@supabase/supabase-js";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export function Profile({ user }: { user: JwtPayload }) {
   const router = useRouter();
 
   const logoutHandler = async () => {
-    const { error } = await logout();
-    if (error) {
-      toastError(error);
-      return;
-    }
-
+    await logout();
     router.push("/auth/login");
   };
 
@@ -40,7 +35,11 @@ export function Profile({ user }: { user: JwtPayload }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-32">
         <DropdownMenuGroup>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link href={"/profile"} className="w-full h-full">
+              Profile
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuItem>Settings</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

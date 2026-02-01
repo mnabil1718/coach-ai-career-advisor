@@ -10,6 +10,5 @@ export async function getCurrentUser(): Promise<ActionResult<JwtPayload | undefi
       const { data } = await supabase.auth.getClaims();
       const user = data?.claims;
 
-      return { error: null, data: user };
-    
+      return { data: user };
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Ubuntu_Sans } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/toaster";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -27,7 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
+      <body
+        className={`${geistSans.className} antialiased min-h-screen flex flex-col`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -35,7 +37,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <Toaster duration={4000} richColors visibleToasts={1} />
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
