@@ -32,6 +32,8 @@ import {
   Wrench,
   X,
   LoaderCircle,
+  SquareUserRound,
+  Briefcase,
 } from "lucide-react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import { Collapsible, CollapsibleContent } from "./ui/collapsible";
@@ -144,7 +146,10 @@ export function PersonalInfoForm() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Personal Information</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <SquareUserRound className="w-5 h-5 text-muted-foreground" />
+              Personal Information
+            </CardTitle>
             <CollapsibleTrigger className="bg-accent/20 rounded-full p-2">
               <CollapseButton open={open} />
             </CollapsibleTrigger>
@@ -323,7 +328,10 @@ export function WorkForm() {
     <Collapsible open={open} onOpenChange={setOpen}>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Work Experiences</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Briefcase className="w-5 h-5 text-muted-foreground" />
+            Work Experiences
+          </CardTitle>
           <CollapsibleTrigger className="bg-accent/20 rounded-full p-2">
             <CollapseButton open={open} />
           </CollapsibleTrigger>

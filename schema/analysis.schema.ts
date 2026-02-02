@@ -13,8 +13,8 @@ export const AnalysisSchema = z.object({
     category: z.string(),
     title: z.string(),
     feedback: z.string(),
-    before: z.string().optional(),
-    after: z.string().optional(),
+    before: z.string().describe("The original bad line from the CV"),
+    after: z.string().describe("The improved, high-impact sentence to replace it"),
     actionItem: z.string()
   }))
 });
