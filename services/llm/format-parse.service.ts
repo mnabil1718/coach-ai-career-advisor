@@ -1,11 +1,11 @@
 "use server"
 
-import { GEMINI_3_FLASH } from "@/constants/model";
+import { SELECTED_MODEL } from "@/constants/model";
 import { ai } from "@/lib/gemini/gemini";
-import { ResumeSchema } from "@/schema/resume.schema";
+import { ParseResumeResponse, ParseResumeResponseType, } from "@/schema/resume.schema";
 import { ActionResult } from "@/types/action.type";
 
-export async function formatParse(txt: string): Promise<ActionResult<string>> {
+export async function formatParse(txt: string): Promise<ActionResult<ParseResumeResponseType>> {
 const prompt = `
         TASK: Extract resume data.
         
@@ -21,15 +21,17 @@ const prompt = `
   try {
 
   const response = await ai.models.generateContent({
-    model: GEMINI_3_FLASH,
+    model: SELECTED_MODEL,
     contents: prompt,
     config: {
         responseMimeType: "application/json",
-        responseSchema: ResumeSchema
+        responseSchema: ParseResumeResponse
     },    
   });
 
-  return { data: response.text }
+  const json = JSON.parse(response.text ?? "{}");
+
+  return { data: json }
 
   } catch (err: unknown) {
     
@@ -39,6 +41,4 @@ const prompt = `
 
     throw new Error('AI generation failed');
   }
-
-  
 }

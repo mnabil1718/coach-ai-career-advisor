@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Resume } from "@/types/resume.type";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, LoaderCircle } from "lucide-react";
 import { TooltipHover } from "../tooltip-hover";
 import { downloadFile, getSignedURL } from "@/services/storage/storage.service";
 import { SUPABASE_BUCKET_NAME } from "@/constants/file";
@@ -22,9 +22,14 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { toastLoading, toastSuccess } from "@/utils/toast";
 import { parseFromArrayBuffer } from "@/services/processing/parser.service.";
 import { formatParse } from "@/services/llm/format-parse.service";
+import { createSession } from "@/services/sessions/sessions.service";
+import { createCVReview } from "@/services/cv_reviews/reviews.service";
+import { useRouter } from "next/navigation";
 
 export function ResumeSelection({ resumes }: { resumes: Resume[] }) {
+  const router = useRouter();
   const [selected, setSelected] = useState<Resume>(resumes[0]);
+  const [loadmsg, setLoadMsg] = useState<string | null>(null); // loading with status
 
   const previewHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -47,6 +52,7 @@ export function ResumeSelection({ resumes }: { resumes: Resume[] }) {
   const TOAST_PARSING_ID = "parsing";
 
   const parseHandler = async () => {
+    setLoadMsg("parsing...");
     toastLoading("Parsing document...", undefined, TOAST_PARSING_ID);
     const { data: blob } = await downloadFile(
       SUPABASE_BUCKET_NAME,
@@ -54,11 +60,20 @@ export function ResumeSelection({ resumes }: { resumes: Resume[] }) {
     );
     const { data: txt } = await parseFromArrayBuffer(blob!);
 
+    setLoadMsg("formatting...");
     toastLoading("Generating Response...", undefined, TOAST_PARSING_ID, true);
     const { data: json } = await formatParse(txt!);
 
-    console.log("FORMATTED: ", json);
-    toastSuccess("Response is ready", undefined, TOAST_PARSING_ID);
+    const { data: session } = await createSession();
+    await createCVReview({
+      session_id: session!.id,
+      resume_id: selected.id,
+      parsed_content: json!,
+    });
+
+    router.push(`/sessions/${session!.id}/verify`);
+
+    toastSuccess("Parsing finished", undefined, TOAST_PARSING_ID);
   };
 
   return (
@@ -70,12 +85,22 @@ export function ResumeSelection({ resumes }: { resumes: Resume[] }) {
         selectedChangeHandler={selectedChangeHandler}
       />
       <Button
+        disabled={!!loadmsg}
         onClick={parseHandler}
         className="px-5 py-5 rounded-full font-bold mt-4"
       >
-        Parse CV
+        {!loadmsg ? "Parse CV" : <ParseLoad loadmsg={loadmsg} />}
       </Button>
     </>
+  );
+}
+
+function ParseLoad({ loadmsg }: { loadmsg: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <LoaderCircle className="animate-spin opacity-80" />{" "}
+      <span>{loadmsg}</span>
+    </div>
   );
 }
 

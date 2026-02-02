@@ -34,6 +34,81 @@ export type Database = {
   }
   public: {
     Tables: {
+      coaching_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          stage: Database["public"]["Enums"]["COACHING_STAGE"] | null
+          status: Database["public"]["Enums"]["COACHING_STATUS"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          stage?: Database["public"]["Enums"]["COACHING_STAGE"] | null
+          status?: Database["public"]["Enums"]["COACHING_STATUS"]
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          stage?: Database["public"]["Enums"]["COACHING_STAGE"] | null
+          status?: Database["public"]["Enums"]["COACHING_STATUS"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cv_reviews: {
+        Row: {
+          checklist: Json | null
+          created_at: string
+          id: string
+          parsed_content: Json | null
+          resume_id: string | null
+          review: Json | null
+          session_id: string
+          suggestions: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          checklist?: Json | null
+          created_at?: string
+          id?: string
+          parsed_content?: Json | null
+          resume_id?: string | null
+          review?: Json | null
+          session_id?: string
+          suggestions?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          checklist?: Json | null
+          created_at?: string
+          id?: string
+          parsed_content?: Json | null
+          resume_id?: string | null
+          review?: Json | null
+          session_id?: string
+          suggestions?: Json | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cv_reviews_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cv_reviews_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: true
+            referencedRelation: "coaching_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resumes: {
         Row: {
           created_at: string
@@ -66,7 +141,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      COACHING_STAGE: "CV_REVIEW" | "MOCK_INTERVIEW" | "SKILL_GAP"
+      COACHING_STATUS: "PENDING" | "COMPLETED"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -196,7 +272,10 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      COACHING_STAGE: ["CV_REVIEW", "MOCK_INTERVIEW", "SKILL_GAP"],
+      COACHING_STATUS: ["PENDING", "COMPLETED"],
+    },
   },
 } as const
 

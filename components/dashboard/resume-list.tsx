@@ -9,7 +9,7 @@ export async function ResumeList() {
   const { data: user } = await getCurrentUser();
   const { data: resumes } = await getUserResumes();
 
-  if (resumes!.length < 1) {
+  if (resumes!.length === 0) {
     return (
       <div className="w-full flex flex-col p-5 border rounded-lg border-border/30 items-center">
         <Image

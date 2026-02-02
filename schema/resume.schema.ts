@@ -1,4 +1,7 @@
-export const ResumeSchema = {
+import { z } from "zod";
+
+// JSON schema
+export const ParseResumeResponse = {
   type: "object",
   properties: {
     personalInfo: {
@@ -61,3 +64,51 @@ export const ResumeSchema = {
   }
   // No global required array either
 };
+
+
+
+// zod schema
+export const ParseResumeSchema = z.object({
+  personalInfo: z.object({
+    fullName: z.string().nullable().optional(),
+    email: z.email().nullable().optional(),
+    phone: z.string().nullable().optional(),
+    location: z.string().nullable().optional(),
+    linkedin: z.string().nullable().optional(),
+    website: z.string().nullable().optional(),
+  }).nullable().optional(),
+
+  workExperience: z.array(
+    z.object({
+      company: z.string().nullable().optional(),
+      role: z.string().nullable().optional(),
+      startDate: z.string().nullable().optional(),
+      endDate: z.string().nullable().optional(),
+      description: z.string().nullable().optional(),
+    })
+  ).nullable().optional(),
+
+  education: z.array(
+    z.object({
+      institution: z.string().nullable().optional(),
+      degree: z.string().nullable().optional(),
+      fieldOfStudy: z.string().nullable().optional(),
+      graduationDate: z.string().nullable().optional(),
+    })
+  ).nullable().optional(),
+
+  skills: z.array(z.string()).nullable().optional(),
+
+  projects: z.array(
+    z.object({
+      name: z.string().nullable().optional(),
+      description: z.string().nullable().optional(),
+      link: z.string().nullable().optional(),
+    })
+  ).nullable().optional(),
+});
+
+export type ParseResumeResponseType = typeof ParseResumeResponse;
+
+//  for form state
+export type ParseResumeSchemaType = z.infer<typeof ParseResumeSchema>;
