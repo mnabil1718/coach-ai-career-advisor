@@ -1,14 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Input } from "../ui/input";
-import {
-  InterviewFormSchemaType,
-  InterviewSteps,
-  QuestionsArraySchemaType,
-  QuestionSchemaType,
-  RoleLevel,
-} from "@/types/interview.type";
+import { AnswerFormKey, InterviewFormSchemaType } from "@/types/interview.type";
 import {
   Field,
   FieldContent,
@@ -18,9 +11,7 @@ import {
   FieldLabel,
 } from "../ui/field";
 import { Button } from "../ui/button";
-import { Controller, useForm, UseFormReturn } from "react-hook-form";
-import { InterviewFormSchema } from "@/schema/interview.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useFormContext } from "react-hook-form";
 import { Required } from "../form/required-span";
 import { Json } from "@/database.types";
 import {
@@ -30,162 +21,62 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { generateQuestions } from "@/services/llm/interview.service";
 import { LoaderCircle } from "lucide-react";
-import { toastLoading, toastSuccess } from "@/utils/toast";
-import {
-  createInterview,
-  insertQAs,
-} from "@/services/interview/interview.service";
 import { Textarea } from "../ui/textarea";
+
+import {
+  InterviewProvider,
+  useInterviewContext,
+} from "@/context/interview-context";
 
 type MockInterviewProps = {
   sessionId: string;
   parsedCVData: Json;
 };
 
-const TOAST_ID = "mocking";
-
 export function MockInterview({ sessionId, parsedCVData }: MockInterviewProps) {
-  const [step, setStep] = useState<number>(0);
-
-  const [q, setQ] = useState<QuestionsArraySchemaType>({ questions: [] });
-  const form = useForm<InterviewFormSchemaType>({
-    resolver: zodResolver(InterviewFormSchema),
-    mode: "onBlur",
-    defaultValues: {
-      target_role: "",
-      target_role_level: "junior",
-      answers: [null, null, null],
-    },
-  });
-
-  const start = async (target_role: string, target_role_level: RoleLevel) => {
-    toastLoading("Generating questions...", undefined, TOAST_ID, true);
-    const { data: itv } = await createInterview(
-      sessionId,
-      target_role,
-      target_role_level,
-    );
-
-    const { data: qs } = await generateQuestions(
-      target_role,
-      target_role_level,
-      parsedCVData,
-    );
-
-    await insertQAs(itv!.id, qs!);
-    setQ(qs!);
-
-    setStep(1);
-
-    toastSuccess("Questions generated", undefined, TOAST_ID);
-  };
-
-  const nextHandler = () => {
-    setStep((prev) => {
-      if (prev < 3) {
-        return prev + 1;
-      }
-
-      return prev;
-    });
-  };
-
-  const backHandler = () => {
-    if (step === 1) {
-      // reset interview if back to starting page
-      form.reset({
-        target_role: "",
-        target_role_level: "junior",
-        answers: [null, null, null],
-      });
-    }
-
-    setStep((prev) => {
-      if (prev > 0) {
-        return prev - 1;
-      }
-
-      return prev;
-    });
-  };
-
-  function stepDecider(step: InterviewSteps): React.ReactNode {
-    switch (step) {
-      case 0:
-        return <RoleInput form={form} submitCallback={start} />;
-
-      case 1:
-        return (
-          <QA
-            form={form}
-            nextCallback={nextHandler}
-            backHandler={backHandler}
-            index={0}
-            q={q.questions[0]}
-          />
-        );
-
-      case 2:
-        return (
-          <QA
-            form={form}
-            nextCallback={nextHandler}
-            backHandler={backHandler}
-            index={1}
-            q={q.questions[1]}
-          />
-        );
-
-      case 3:
-        return (
-          <QA
-            form={form}
-            nextCallback={nextHandler}
-            backHandler={backHandler}
-            index={2}
-            q={q.questions[2]}
-          />
-        );
-
-      default:
-        return <RoleInput form={form} submitCallback={start} />;
-    }
-  }
-
   return (
-    <div className="w-full">
-      <div className="max-w-md mx-auto">{stepDecider(step)}</div>
-    </div>
+    <InterviewProvider sessionId={sessionId} parsedCV={parsedCVData}>
+      <div className="w-full">
+        <div className="max-w-md mx-auto">
+          <StepDecider />
+        </div>
+      </div>
+    </InterviewProvider>
   );
 }
 
-function RoleInput({
-  form,
-  submitCallback,
-}: {
-  form: UseFormReturn<InterviewFormSchemaType>;
-  submitCallback: (target_role: string, target_role_level: RoleLevel) => void;
-}) {
-  const [loading, setLoading] = useState<boolean>(false);
+function StepDecider(): React.ReactNode {
+  const { step } = useInterviewContext();
+
+  switch (step) {
+    case 0:
+      return <RoleInput />;
+
+    case 1:
+      return <QA index={0} />;
+
+    case 2:
+      return <QA index={1} />;
+
+    case 3:
+      return <QA index={2} />;
+
+    default:
+      return <RoleInput />;
+  }
+}
+
+function RoleInput() {
+  const form = useFormContext<InterviewFormSchemaType>();
+  const { loading, startProcessor } = useInterviewContext();
 
   const startHandler = async () => {
     const valid = await form.trigger();
 
-    if (!valid) {
-      // ADD THIS: It will tell you exactly why validation is failing
-      console.log("Validation Failed:", form.formState.errors);
-      return;
-    }
+    if (!valid) return;
 
-    console.log("LOCAL START", valid);
-    setLoading(true);
-
-    const target_role = form.getValues("target_role");
-    const target_role_level = form.getValues("target_role_level");
-
-    submitCallback(target_role, target_role_level);
+    startProcessor();
   };
 
   return (
@@ -283,52 +174,41 @@ function QBadge({ type }: { type: string }) {
   );
 }
 
-function QA({
-  q,
-  index,
-  form,
-  nextCallback,
-  backHandler,
-}: {
-  index: number;
-  q: QuestionSchemaType;
-  form: UseFormReturn<InterviewFormSchemaType>;
-  nextCallback: () => void;
-  backHandler: () => void;
-}) {
-  const fieldName = `answers.${index}` as const as
-    | `answers.0`
-    | `answers.1`
-    | `answers.2`;
+function QA({ index }: { index: number }) {
+  const form = useFormContext<InterviewFormSchemaType>();
+  const { loading, nextProcessor, backProcessor, questions } =
+    useInterviewContext();
+
+  const fieldName = `answers.${index}` as const as AnswerFormKey;
 
   const skipHandler = () => {
     form.clearErrors(fieldName);
     form.setValue(fieldName, null);
-    nextCallback();
+    nextProcessor(index);
   };
 
   const nextHandler = async () => {
-    const currentValue = form.getValues(fieldName);
-    form.setValue(fieldName, currentValue ?? "");
+    const val = form.getValues(fieldName);
+    form.setValue(fieldName, val ?? "");
     const valid = await form.trigger(fieldName);
 
     if (valid) {
-      nextCallback();
+      nextProcessor(index);
     }
   };
-
-  const value = form.watch(fieldName);
 
   return (
     <div>
       <div className="flex flex-col w-full items-center">
-        <QBadge type={q.type} />
+        <QBadge type={questions.questions[index].type} />
         <span className="text-sm text-muted-foreground mb-6">
           Question {index + 1}/3
         </span>
       </div>
 
-      <h2 className="text-lg leading-loose mb-10 text-center">{q.question}</h2>
+      <h2 className="text-lg leading-loose mb-10 text-center">
+        {questions.questions[index].question}
+      </h2>
 
       <Controller
         name={fieldName}
@@ -355,7 +235,7 @@ function QA({
           type="button"
           variant="ghost"
           className="rounded-full"
-          onClick={backHandler}
+          onClick={backProcessor}
         >
           Back
         </Button>
@@ -363,20 +243,18 @@ function QA({
         <div className="flex items-center gap-2">
           <Button
             disabled={
-              form.formState.isSubmitting || value !== "" || value !== null
+              form.formState.isSubmitting || !form.formState.isValid || loading
             }
             onClick={nextHandler}
             className="font-bold rounded-full px-8"
           >
-            {form.formState.isSubmitting ? (
+            {loading ? (
               <div className="flex items-center gap-2">
                 <LoaderCircle className="animate-spin" />
-                <span>Saving...</span>
+                <span>Analyzing...</span>
               </div>
-            ) : index < 2 ? (
-              "Next Question"
             ) : (
-              "Finish Interview"
+              "Submit"
             )}
           </Button>
 

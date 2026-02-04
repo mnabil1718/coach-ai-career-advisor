@@ -49,7 +49,7 @@ export function LoginForm({
 
     const { error } = await login({ email, password });
     if (error) {
-      toastError(error, "bottom-right");
+      toastError(error);
     }
 
     router.push("/dashboard");
