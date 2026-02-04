@@ -96,6 +96,7 @@ function SummaryChart({ data }: { data: SummaryChartProp[] }) {
           fontSize={12}
           className="font-medium"
         />
+        <PolarRadiusAxis domain={[0, 10]} tick={false} axisLine={false} />
         <Radar
           dataKey="value"
           fill="hsl(var(--primary))"
@@ -106,27 +107,6 @@ function SummaryChart({ data }: { data: SummaryChartProp[] }) {
       </RadarChart>
     </ChartContainer>
   );
-
-  // return (
-  //   <ChartContainer
-  //     config={chartConfig}
-  //     className="mx-auto aspect-square h-[250px]"
-  //   >
-  //     <RadarChart data={data}>
-  //       <ChartTooltip content={<ChartTooltipContent />} />
-  //       <PolarGrid />
-  //       <PolarAngleAxis dataKey="category" />
-
-  //       <Radar
-  //         name="Score"
-  //         dataKey="score"
-  //         stroke="hsl(var(--primary))"
-  //         fill="hsl(var(--primary))"
-  //         fillOpacity={0.6}
-  //       />
-  //     </RadarChart>
-  //   </ChartContainer>
-  // );
 }
 
 function Recommendations({

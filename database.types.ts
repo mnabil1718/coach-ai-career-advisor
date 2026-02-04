@@ -109,6 +109,85 @@ export type Database = {
           },
         ]
       }
+      interview: {
+        Row: {
+          created_at: string
+          id: string
+          result: Json | null
+          session_id: string
+          target_role: string
+          target_role_level: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          result?: Json | null
+          session_id?: string
+          target_role: string
+          target_role_level: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          result?: Json | null
+          session_id?: string
+          target_role?: string
+          target_role_level?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "coaching_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interview_qas: {
+        Row: {
+          answer: string | null
+          created_at: string
+          feedback: Json | null
+          id: string
+          interview_id: string
+          question: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          answer?: string | null
+          created_at?: string
+          feedback?: Json | null
+          id?: string
+          interview_id: string
+          question: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          answer?: string | null
+          created_at?: string
+          feedback?: Json | null
+          id?: string
+          interview_id?: string
+          question?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_qas_interview_id_fkey"
+            columns: ["interview_id"]
+            isOneToOne: false
+            referencedRelation: "interview"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resumes: {
         Row: {
           created_at: string

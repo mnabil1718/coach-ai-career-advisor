@@ -1,7 +1,9 @@
 import { ReviewReport } from "@/components/review/review-report";
+import { Button } from "@/components/ui/button";
 import { AnalysisSchema } from "@/schema/analysis.schema";
 import { getCVReview } from "@/services/cv_reviews/reviews.service";
 import { getSession } from "@/services/sessions/sessions.service";
+import Link from "next/link";
 
 export default async function ReviewPage({
   params,
@@ -25,6 +27,15 @@ export default async function ReviewPage({
           <h1 className="text-xl font-medium mb-2">CV Analysis Report</h1>
         </header>
         <ReviewReport review={parsed.data} />
+
+        <div className="w-full flex items-center justify-between">
+          <Link href={`/sessions/${session?.id}/verify`}>
+            <Button variant={"ghost"}>Back</Button>
+          </Link>
+          <Link href={`/sessions/${session?.id}/mock`}>
+            <Button className="font-semibold">Next: Mock interview</Button>
+          </Link>
+        </div>
       </div>
     </div>
   );
