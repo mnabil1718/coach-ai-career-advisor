@@ -12,8 +12,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Resume } from "@/types/resume.type";
-import { ExternalLink, LoaderCircle } from "lucide-react";
-import { TooltipHover } from "../tooltip-hover";
+import { LoaderCircle } from "lucide-react";
+
 import { downloadFile, getSignedURL } from "@/services/storage/storage.service";
 import { SUPABASE_BUCKET_NAME } from "@/constants/file";
 import { useState } from "react";
@@ -25,6 +25,7 @@ import { formatParse } from "@/services/llm/format-parse.service";
 import { createSession } from "@/services/sessions/sessions.service";
 import { createCVReview } from "@/services/cv_reviews/reviews.service";
 import { useRouter } from "next/navigation";
+import { SelectedResume } from "../selected-resume";
 
 export function ResumeSelection({ resumes }: { resumes: Resume[] }) {
   const router = useRouter();
@@ -125,14 +126,10 @@ export function SelectionDialog({
         </DialogTrigger>
       </div>
       <DialogTrigger asChild>
-        <div className="w-full cursor-pointer p-5 rounded-lg border ring-2 text-sm font-medium flex items-center gap-3">
-          <span className="flex-1">{selected.name}</span>
-          <TooltipHover content="See preview">
-            <button onClick={previewHandler}>
-              <ExternalLink className="size-5 cursor-pointer" />
-            </button>
-          </TooltipHover>
-        </div>
+        <SelectedResume
+          resume_title={selected.name}
+          previewHandler={previewHandler}
+        />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

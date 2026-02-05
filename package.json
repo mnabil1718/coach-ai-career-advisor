@@ -4,7 +4,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "db:type": "npx supabase gen types typescript --local > database.types.ts"
   },
   "dependencies": {
     "@google/genai": "^1.38.0",

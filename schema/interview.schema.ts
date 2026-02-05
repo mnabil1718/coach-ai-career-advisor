@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const AnswerSchema = z.string().min(50, "too short. minimum should be 50 characters long").nullable();
+export const AnswerSchema = z.string().min(50, "too short. minimum should be 50 characters long").max(1000, "Cannot exceeds 1000 characters").nullable();
 
 export type AnswerSchemaType = z.infer<typeof AnswerSchema>; 
 
@@ -40,7 +40,7 @@ export const FeedbackSchema = z.object({
 });
 
 export const FeedbacksArraySchema = z.object({
-  answers: z.array(FeedbackSchema).length(3),
+  answers: z.array(FeedbackSchema.nullable()).length(3),
 });
 
 

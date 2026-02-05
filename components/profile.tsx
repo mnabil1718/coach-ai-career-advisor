@@ -29,7 +29,7 @@ export function Profile({ user }: { user: JwtPayload }) {
         <Avatar>
           <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email} />
           <AvatarFallback>
-            {getInitials(user.user_metadata?.name)}
+            {getInitials(user.user_metadata?.name ?? "")}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

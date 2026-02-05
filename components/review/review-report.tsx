@@ -2,19 +2,6 @@
 
 import { CheckCircle2, Lightbulb } from "lucide-react";
 import {
-  Radar,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-} from "recharts";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import {
   Card,
   CardContent,
   CardDescription,
@@ -30,13 +17,7 @@ import {
 import { ReviewBadge } from "./review-badge";
 import { useState } from "react";
 import { Button } from "../ui/button";
-
-const chartConfig = {
-  score: {
-    label: "Score",
-    color: "hsl(var(--primary))",
-  },
-} satisfies ChartConfig;
+import { SummaryChart } from "../summary-chart";
 
 export function ReviewReport({ review }: { review: AnalysisSchemaType }) {
   // Transform category data for radar chart
@@ -77,35 +58,6 @@ export function ReviewReport({ review }: { review: AnalysisSchemaType }) {
       {/* RECOMMEND */}
       <Recommendations recommendations={review.recommendations} />
     </div>
-  );
-}
-
-type SummaryChartProp = {
-  category: string;
-  value: number;
-};
-
-function SummaryChart({ data }: { data: SummaryChartProp[] }) {
-  return (
-    <ChartContainer config={chartConfig} className="h-full w-full">
-      <RadarChart data={data}>
-        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-        <PolarGrid className="fill-accent/10" />
-        <PolarAngleAxis
-          dataKey="category"
-          fontSize={12}
-          className="font-medium"
-        />
-        <PolarRadiusAxis domain={[0, 10]} tick={false} axisLine={false} />
-        <Radar
-          dataKey="value"
-          fill="hsl(var(--primary))"
-          fillOpacity={0.4}
-          stroke="hsl(var(--primary))"
-          strokeWidth={2}
-        />
-      </RadarChart>
-    </ChartContainer>
   );
 }
 

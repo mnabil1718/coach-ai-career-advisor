@@ -10,8 +10,7 @@ import { ActionResult } from "@/types/action.type";
 export async function analyzeCV(data: ParseResumeSchemaType): Promise<ActionResult<AnalysisSchemaType>> {
 
   const prompt = `
-    TASK: Act as an expert Technical Recruiter and ATS Specialist. 
-    Analyze the following parsed CV data based on the PRD criteria:
+    TASK: Analyze the following parsed CV data based on the PRD criteria:
     
     1. Content Quality (40%): Check for quantifiable results (numbers/%) and action verbs.
     2. Structure & Format (30%): Check for missing contact info or clear sections.
@@ -23,8 +22,9 @@ export async function analyzeCV(data: ParseResumeSchemaType): Promise<ActionResu
 
     INSTRUCTIONS:
     - Provide 5-7 concrete, actionable suggestions.
-    - For the "before" field: Extract the exact, verbatim sentence or bullet point from the original CV.
-    - For the "after" field: Rewrite that specific line into a high-impact, results-oriented sentence. Ensure it is a complete, ready-to-use sentence, not a summary.
+    - Order from highest priority to lowest.
+    - For the "before" field: Extract the exact, verbatim sentence or bullet point from the original CV. transform it into sentence format that is human readable.
+    - For the "after" field: Rewrite that specific line into a high-impact, results-oriented sentence. Ensure it is a complete, ready-to-use sentence, not a summary and also human readable.
     - If skills are missing for their apparent role (e.g., a Frontend dev missing "React"), suggest them.
     - Return the response strictly as JSON.
   `;
@@ -32,20 +32,11 @@ export async function analyzeCV(data: ParseResumeSchemaType): Promise<ActionResu
   try {
       const response = await ai.models.generateContent({
     model: SELECTED_MODEL,
-    contents: [
-        { 
-            role: "user", 
-            parts: 
-            [
-                {
-                    text: prompt 
-                },
-            ], 
-        },
-    ],
+    contents: prompt,
     config: {
       responseMimeType: "application/json",
       responseSchema: z.toJSONSchema(AnalysisSchema),
+      systemInstruction: 'You are an expert Technical Recruiter and ATS Specialist.',
     },
   });
 

@@ -1,7 +1,11 @@
 "use client";
 
 import { Input } from "../ui/input";
-import { AnswerFormKey, InterviewFormSchemaType } from "@/types/interview.type";
+import {
+  AnswerFormKey,
+  FeedbackSchemaType,
+  InterviewFormSchemaType,
+} from "@/types/interview.type";
 import {
   Field,
   FieldContent,
@@ -21,13 +25,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { LoaderCircle } from "lucide-react";
-import { Textarea } from "../ui/textarea";
+import { LoaderCircle, Lightbulb, MessageSquare } from "lucide-react";
 
 import {
   InterviewProvider,
   useInterviewContext,
 } from "@/context/interview-context";
+
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroupTextarea,
+} from "../ui/input-group";
+import React from "react";
+import { Feedback } from "./feedback";
 
 type MockInterviewProps = {
   sessionId: string;
@@ -38,16 +50,15 @@ export function MockInterview({ sessionId, parsedCVData }: MockInterviewProps) {
   return (
     <InterviewProvider sessionId={sessionId} parsedCV={parsedCVData}>
       <div className="w-full">
-        <div className="max-w-md mx-auto">
-          <StepDecider />
-        </div>
+        <StepDecider />
       </div>
     </InterviewProvider>
   );
 }
 
 function StepDecider(): React.ReactNode {
-  const { step } = useInterviewContext();
+  const { step, feedbacks, backProcessor } = useInterviewContext();
+  const feedback = feedbacks.answers[Math.floor(step) - 1];
 
   switch (step) {
     case 0:
@@ -56,11 +67,35 @@ function StepDecider(): React.ReactNode {
     case 1:
       return <QA index={0} />;
 
+    case 1.5:
+      if (!feedback) {
+        backProcessor();
+        return;
+      }
+
+      return <FeedbackView index={Math.floor(step) - 1} data={feedback} />;
+
     case 2:
       return <QA index={1} />;
 
+    case 2.5:
+      if (!feedback) {
+        backProcessor();
+        return;
+      }
+
+      return <FeedbackView index={Math.floor(step) - 1} data={feedback} />;
+
     case 3:
       return <QA index={2} />;
+
+    case 3.5:
+      if (!feedback) {
+        backProcessor();
+        return;
+      }
+
+      return <FeedbackView index={Math.floor(step) - 1} data={feedback} />;
 
     default:
       return <RoleInput />;
@@ -80,7 +115,7 @@ function RoleInput() {
   };
 
   return (
-    <div>
+    <div className="max-w-md mx-auto">
       <header className="my-12 text-center">
         <h1 className="text-xl font-medium mb-2">Start Mock Interview</h1>
       </header>
@@ -174,10 +209,40 @@ function QBadge({ type }: { type: string }) {
   );
 }
 
+function FinishInterviewButton() {
+  const form = useFormContext<InterviewFormSchemaType>();
+  const { finishProcessor, loading } = useInterviewContext();
+
+  return (
+    <Button
+      disabled={form.formState.isSubmitting || loading}
+      onClick={finishProcessor}
+      className="font-bold rounded-full px-8"
+    >
+      {loading ? (
+        <div className="flex items-center gap-2">
+          <LoaderCircle className="animate-spin" /> <span>Processing...</span>
+        </div>
+      ) : (
+        "Finish Interview"
+      )}
+    </Button>
+  );
+}
+
 function QA({ index }: { index: number }) {
   const form = useFormContext<InterviewFormSchemaType>();
-  const { loading, nextProcessor, backProcessor, questions } =
-    useInterviewContext();
+  const {
+    step,
+    loading,
+    nextProcessor,
+    backProcessor,
+    questions,
+    feedbacks,
+    incHalfStep,
+  } = useInterviewContext();
+
+  const feedback = feedbacks.answers[index];
 
   const fieldName = `answers.${index}` as const as AnswerFormKey;
 
@@ -197,8 +262,51 @@ function QA({ index }: { index: number }) {
     }
   };
 
+  const renderSubmit = (): React.ReactNode => {
+    if (loading && !feedback) {
+      return (
+        <Button
+          disabled={form.formState.isSubmitting || loading}
+          onClick={nextHandler}
+          className="font-bold rounded-full px-8"
+        >
+          <div className="flex items-center gap-2">
+            <LoaderCircle className="animate-spin" />
+            <span>Analyzing...</span>
+          </div>
+        </Button>
+      );
+    } else if (!loading) {
+      return (
+        <Button
+          disabled={form.formState.isSubmitting || loading}
+          onClick={nextHandler}
+          className="font-bold rounded-full px-8"
+        >
+          Submit
+        </Button>
+      );
+    } else if (step >= 3.5 && feedback) {
+      // Finalize
+      return <FinishInterviewButton />;
+    }
+  };
+
   return (
-    <div>
+    <div className="w-full mb-12">
+      {feedback && (
+        <div className="flex justify-end">
+          <Button
+            onClick={incHalfStep}
+            size={"sm"}
+            variant={"ghost"}
+            className="rounded-full border-primary/30 mb-10 text-primary"
+          >
+            <MessageSquare />
+            <span>See Feedback</span>
+          </Button>
+        </div>
+      )}
       <div className="flex flex-col w-full items-center">
         <QBadge type={questions.questions[index].type} />
         <span className="text-sm text-muted-foreground mb-6">
@@ -210,18 +318,30 @@ function QA({ index }: { index: number }) {
         {questions.questions[index].question}
       </h2>
 
+      <STARMethodTip />
+
       <Controller
         name={fieldName}
         control={form.control}
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid} className="w-full mb-10">
-            <Textarea
-              {...field}
-              // Cast field.value to string to resolve the [string | null, ...] mismatch
-              value={(field.value as string) ?? ""}
-              placeholder="Enter your answer..."
-              className="min-h-[120px]"
-            />
+            <InputGroup>
+              <InputGroupTextarea
+                {...field}
+                // Cast field.value to string to resolve the [string | null, ...] mismatch
+                value={(field.value as string) ?? ""}
+                placeholder="Enter your answer..."
+                className="min-h-[120px]"
+              />
+              <InputGroupAddon
+                align="block-end"
+                className="w-full flex justify-end"
+              >
+                <InputGroupText className="text-xs text-muted-foreground font-normal ml-auto">
+                  {field.value?.length ?? 0}/1000
+                </InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
             {!fieldState.invalid && (
               <FieldDescription>Minimum 50 characters</FieldDescription>
             )}
@@ -241,22 +361,7 @@ function QA({ index }: { index: number }) {
         </Button>
 
         <div className="flex items-center gap-2">
-          <Button
-            disabled={
-              form.formState.isSubmitting || !form.formState.isValid || loading
-            }
-            onClick={nextHandler}
-            className="font-bold rounded-full px-8"
-          >
-            {loading ? (
-              <div className="flex items-center gap-2">
-                <LoaderCircle className="animate-spin" />
-                <span>Analyzing...</span>
-              </div>
-            ) : (
-              "Submit"
-            )}
-          </Button>
+          {renderSubmit()}
 
           {index < 2 && (
             <Button
@@ -269,6 +374,64 @@ function QA({ index }: { index: number }) {
             </Button>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function FeedbackView({
+  index,
+  data,
+}: {
+  index: number;
+  data: FeedbackSchemaType;
+}) {
+  const { step, setStep } = useInterviewContext();
+
+  const next = () => {
+    setStep((prev) => Math.floor(prev) + 1);
+  };
+
+  const back = () => {
+    setStep((prev) => prev - 0.5);
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <Feedback data={data} index={index} />
+
+      <div className="flex w-full items-center justify-between gap-4">
+        <Button onClick={back} variant="ghost" className="rounded-full">
+          Back
+        </Button>
+
+        {step < 3.5 ? (
+          <Button onClick={next} className="font-bold rounded-full px-8">
+            Next Question
+          </Button>
+        ) : (
+          <FinishInterviewButton />
+        )}
+      </div>
+    </div>
+  );
+}
+
+export function STARMethodTip() {
+  return (
+    <div className="group relative flex items-start gap-5 rounded-xl bg-accent/20 p-5 text-xs mb-5">
+      <div className="flex p-2 rounded-full justify-center items-center bg-primary/5">
+        <Lightbulb className="text-primary" />
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-muted-foreground font-medium leading-none">
+          Tip: Use the STAR method to answer
+        </p>
+        <p className="text-muted-foreground">
+          Structure your answer by defining the Situation, the Task at hand, the
+          Action you took, and the Result achieved.
+        </p>
       </div>
     </div>
   );

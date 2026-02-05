@@ -18,5 +18,10 @@
 --   AND (storage.foldername(name))[2] = auth.uid()::text
 -- );
 
-SELECT * FROM public.cv_reviews WHERE session_id = '9230d8d1-260c-4b22-bae7-aa800b7ce63f';
+
+SELECT * FROM public.skill_gaps WHERE id='d966ffbe-40b1-4ce1-bcfb-9eaf01ce8437';
+
+
+
+
 

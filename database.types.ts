@@ -156,7 +156,7 @@ export type Database = {
           interview_id: string
           question: string
           type: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           answer?: string | null
@@ -166,7 +166,7 @@ export type Database = {
           interview_id: string
           question: string
           type: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           answer?: string | null
@@ -176,7 +176,7 @@ export type Database = {
           interview_id?: string
           question?: string
           type?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -211,6 +211,54 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      skill_gaps: {
+        Row: {
+          created_at: string
+          id: string
+          result: Json | null
+          resume_id: string
+          session_id: string
+          skills: string[] | null
+          target_role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          result?: Json | null
+          resume_id?: string
+          session_id?: string
+          skills?: string[] | null
+          target_role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          result?: Json | null
+          resume_id?: string
+          session_id?: string
+          skills?: string[] | null
+          target_role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skill_gaps_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "skill_gaps_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "coaching_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

@@ -2,20 +2,26 @@ import { Json } from "@/database.types";
 import {
   createInterview,
   insertQAs,
+  saveAnswer,
+  saveFeedback,
 } from "@/services/interview/interview.service";
 import {
   feedbackAnswer,
+  generateOverallFeedback,
   generateQuestions,
 } from "@/services/llm/interview.service";
 import {
   AnswerFormKey,
   FeedbacksArraySchemaType,
+  Interview,
   InterviewFormSchemaType,
+  InterviewQuestionAnswer,
   QuestionsArraySchemaType,
 } from "@/types/interview.type";
+import { useState } from "react";
 import { toastLoading, toastSuccess } from "@/utils/toast";
-import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export const useInterview = (
   form: UseFormReturn<InterviewFormSchemaType>,
@@ -23,15 +29,22 @@ export const useInterview = (
   parsedCV: Json,
 ) => {
   const TOAST_ID = "interview:toast";
-  const [step, setStep] = useState<number>(0);
+  const router = useRouter();
+  const params = useSearchParams();
+  const [step, setStep] = useState<number>(Number(params.get("step")) || 0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const [questions, setQuestions] = useState<QuestionsArraySchemaType>({
     questions: [],
   });
   const [feedbacks, setFeedbacks] = useState<FeedbacksArraySchemaType>({
-    answers: [],
+    answers: [null, null, null],
   });
+
+  // needed to sync qa IDs
+  const [qas, setQas] = useState<InterviewQuestionAnswer[]>([]);
+
+  const [interview, setInterview] = useState<Interview | null>(null);
 
   const incStep = () => {
     setStep((prev) => {
@@ -40,6 +53,12 @@ export const useInterview = (
       }
 
       return prev;
+    });
+  };
+
+  const incHalfStep = () => {
+    setStep((prev) => {
+      return prev + 0.5;
     });
   };
 
@@ -65,19 +84,39 @@ export const useInterview = (
       target_role_level,
     );
 
+    setInterview(itv!);
+
     const { data: qs } = await generateQuestions(
       target_role,
       target_role_level,
       parsedCV,
     );
-
-    await insertQAs(itv!.id, qs!);
     setQuestions(qs!);
+
+    const { data: qas } = await insertQAs(itv!.id, qs!);
+    setQas(qas!);
 
     setLoading(false);
     toastSuccess("Questions generated", undefined, TOAST_ID);
 
     setStep(1);
+  };
+
+  const finishProcessor = async () => {
+    setLoading(true);
+    toastLoading("Calculating final result...", undefined, TOAST_ID, true);
+
+    if (interview) {
+      await generateOverallFeedback(interview.id);
+
+      toastSuccess("Your interview result is ready", undefined, TOAST_ID);
+
+      setLoading(false);
+
+      router.push(`/sessions/${sessionId}/mock/${interview.id}/result`);
+    }
+
+    setLoading(false);
   };
 
   const nextProcessor = async (idx: number) => {
@@ -96,6 +135,8 @@ export const useInterview = (
 
     toastLoading("Analyzing answer...", undefined, TOAST_ID, true);
 
+    await saveAnswer(qas[idx].id, answer);
+
     const { data: feedback } = await feedbackAnswer({
       answer,
       question,
@@ -103,17 +144,27 @@ export const useInterview = (
       targetRoleLevel,
     });
 
-    console.log("FEEDBACK", feedback);
+    await saveFeedback(qas[idx].id, feedback!);
 
-    setFeedbacks((prev) => ({
-      ...prev,
-      answers: prev.answers.map((item, i) => (i === idx ? feedback! : item)),
-    }));
+    setFeedbacks((prev) => {
+      if (idx < 0 || idx > 2) {
+        return prev;
+      }
+
+      const copies = [...prev.answers];
+
+      copies[idx] = feedback!;
+
+      return {
+        ...prev,
+        answers: copies,
+      };
+    });
 
     setLoading(false);
     toastSuccess("Feedback generated", undefined, TOAST_ID);
 
-    incStep();
+    incHalfStep();
   };
 
   const backProcessor = () => {
@@ -140,8 +191,10 @@ export const useInterview = (
     setLoading,
     incStep,
     decStep,
+    incHalfStep,
     startProcessor,
     nextProcessor,
     backProcessor,
+    finishProcessor,
   };
 };
