@@ -1,3 +1,5 @@
+import { GapAnalysisPDF } from "@/components/gaps/gaps-pdf";
+import { DownloadPDFButton } from "@/components/review/download-pdf-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -134,7 +136,12 @@ export default async function GapResultPage({
             </div>
           ))}
         </div>
-        <div className="flex w-full justify-center">
+        <div className="flex w-full justify-center gap-2">
+          <DownloadPDFButton
+            filename="Skills_Gap_Roadmap_Report.pdf"
+            document={<GapAnalysisPDF data={analysis} />}
+            buttonText="Download Report"
+          />
           <Link href={"/dashboard"}>
             <Button className="font-semibold px-4 py-2 rounded-full">
               Finish Session

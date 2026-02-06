@@ -1,4 +1,5 @@
 import { DownloadPDFButton } from "@/components/review/download-pdf-button";
+import { CVChecklistPDF } from "@/components/review/pdf-checklist";
 import { ReviewReport } from "@/components/review/review-report";
 import { Button } from "@/components/ui/button";
 import { AnalysisSchema, AnalysisSchemaType } from "@/schema/analysis.schema";
@@ -25,7 +26,11 @@ export default async function ReviewPage({
     <div className="w-full flex-1 flex flex-col items-center">
       <div className="w-full max-w-4xl flex flex-col gap-2 items-center">
         <div className="mt-6 w-full flex justify-end">
-          <DownloadPDFButton data={parsed} />
+          <DownloadPDFButton
+            filename="CV_Checklist_Report.pdf"
+            document={<CVChecklistPDF data={parsed} />}
+            buttonText="Download Report"
+          />
         </div>
         <header className="mt-6 mb-6 text-center">
           <h1 className="text-xl font-medium mb-2">CV Analysis Report</h1>
