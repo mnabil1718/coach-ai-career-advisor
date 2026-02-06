@@ -22,18 +22,11 @@ export default async function MockPage({
 
   const { data: interview } = await getInterviewBySessionId(id);
 
-  if (
-    !step ||
-    !interviewId ||
-    Number(step) !== interview!.step ||
-    interview!.id !== interviewId
-  ) {
+  // redirect to correct steps if interview exists
+  if (interview && !step && !interviewId) {
     const p = new URLSearchParams();
-
     p.set("step", String(interview!.step));
-
     p.set("interviewId", interview!.id);
-
     redirect(`/sessions/${id}/mock?${p.toString()}`);
   }
 
