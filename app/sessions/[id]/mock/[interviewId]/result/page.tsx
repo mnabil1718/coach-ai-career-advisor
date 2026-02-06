@@ -7,12 +7,7 @@ import {
   getInterview,
   getQuestionAnswersByInterviewId,
 } from "@/services/interview/interview.service";
-import {
-  AnswerArraySchemaType,
-  FeedbackSchemaType,
-  QuestionAnswerPair,
-  QuestionsArraySchemaType,
-} from "@/types/interview.type";
+import { FeedbackSchemaType, QuestionAnswerPair } from "@/types/interview.type";
 import { validateData } from "@/utils/parse";
 import Link from "next/link";
 
