@@ -10,7 +10,6 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname, useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
-import { STARMethodTip } from "./mock-interview";
 import { Button } from "../ui/button";
 import { Field, FieldDescription, FieldError } from "../ui/field";
 import {
@@ -27,7 +26,7 @@ import {
   updateStep,
 } from "@/services/interview/interview.service";
 import { feedbackAnswer } from "@/services/llm/interview.service";
-import { MessageSquare } from "lucide-react";
+import { Lightbulb, MessageSquare } from "lucide-react";
 
 export type MockQuestionProps = {
   step: number;
@@ -44,7 +43,6 @@ export function MockQuestion({
   question,
   feedback,
 }: MockQuestionProps) {
-  console.log("STEP: ", step);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -117,7 +115,6 @@ export function MockQuestion({
     const updated = step + 0.5;
     await updateStep(interview.id, updated);
 
-    console.log("UPDATED STEP");
     const params = new URLSearchParams();
     params.set("interviewId", interview.id);
     params.set("step", `${updated}`);
@@ -257,6 +254,26 @@ function QBadge({ type }: { type: string }) {
     <div className="px-3.5 py-1.5 border text-sm font-medium rounded-full bg-accent/30 mb-2">
       <span>{type[0].toUpperCase()}</span>
       <span>{type.slice(1)}</span>
+    </div>
+  );
+}
+
+export function STARMethodTip() {
+  return (
+    <div className="group relative flex items-start gap-5 rounded-xl bg-accent/20 p-5 text-xs mb-5">
+      <div className="flex p-2 rounded-full justify-center items-center bg-primary/5">
+        <Lightbulb className="text-primary" />
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-muted-foreground font-medium leading-none">
+          Tip: Use the STAR method to answer
+        </p>
+        <p className="text-muted-foreground">
+          Structure your answer by defining the Situation, the Task at hand, the
+          Action you took, and the Result achieved.
+        </p>
+      </div>
     </div>
   );
 }
