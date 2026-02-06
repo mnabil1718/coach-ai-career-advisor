@@ -69,7 +69,7 @@ export function AnswerOverview({ pairs }: { pairs: QuestionAnswerPair[] }) {
                 </div>
 
                 {/* The Answer */}
-                <div className="bg-accent/5 rounded-xl p-4 border border-border/50 group relative">
+                <div className="bg-accent/15 rounded-xl p-4 border border-border/50 group relative">
                   <div className="flex items-center gap-2 mb-2">
                     <MessageSquareText className="w-3.5 h-3.5 text-primary/70" />
                     <span className="text-sm font-medium text-muted-foreground tracking-tight">

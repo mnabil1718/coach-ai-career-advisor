@@ -1,5 +1,7 @@
 import { AnswerOverview } from "@/components/interview/answer-overview";
 import { Feedback } from "@/components/interview/feedback";
+import { InterviewFeedbackPDF } from "@/components/interview/feedback-pdf";
+import { DownloadPDFButton } from "@/components/review/download-pdf-button";
 import { Button } from "@/components/ui/button";
 
 import { FeedbackSchema } from "@/schema/interview.schema";
@@ -41,6 +43,13 @@ export default async function MockResultPage({
   return (
     <div className="w-full flex-1 flex flex-col items-center">
       <div className="w-full max-w-4xl flex flex-col gap-2 items-center mb-12">
+        <div className="flex w-full justify-end">
+          <DownloadPDFButton
+            filename="Interview_Report.pdf"
+            document={<InterviewFeedbackPDF data={result} />}
+            buttonText="Download Report"
+          />
+        </div>
         <h1 className="text-2xl font-medium mt-12 mb-7">
           Interview Performance Report
         </h1>
