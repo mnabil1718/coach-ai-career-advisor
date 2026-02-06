@@ -1,6 +1,11 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { SkillGapAnalysisSchema } from "@/schema/gaps.schema";
+import {
+  SkillGapAnalysisSchema,
+  SkillGapAnalysisSchemaType,
+} from "@/schema/gaps.schema";
 import { getGap } from "@/services/gaps/gaps.service";
+import { validateData } from "@/utils/parse";
 import { CheckCircle2, XCircle, Star, Clock, BookOpen } from "lucide-react";
 import Link from "next/link";
 
@@ -13,28 +18,25 @@ export default async function GapResultPage({
 
   const { data: gap } = await getGap(gapId);
 
-  const parsed = SkillGapAnalysisSchema.safeParse(gap!.result);
-
-  if (!parsed.success) {
-    console.error(parsed.error);
-    return <div>Error loading analysis...</div>;
-  }
-
-  const analysis = parsed.data;
+  const analysis = validateData<SkillGapAnalysisSchemaType>(
+    SkillGapAnalysisSchema,
+    gap!.result,
+  );
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
+    <div className="max-w-4xl mx-auto p-5 mt-12 space-y-8">
       {/* 1. Header & Summary */}
-      <section className="text-center space-y-4">
-        <h1 className="text-3xl font-bold tracking-tight">
+      <section className="text-center">
+        <h1 className="text-3xl font-semibold tracking-tight mb-5">
           Skill Gap Analysis
         </h1>
-        <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-100">
+        <Badge
+          variant={"outline"}
+          className="py-2 px-4 rounded-full text-base bg-primary/5 mb-10"
+        >
           Match Score: {analysis.match_score}
-        </div>
-        <p className="text-slate-600 max-w-2xl mx-auto italic">
-          {analysis.analysis_summary}
-        </p>
+        </Badge>
+        <p className="text-lg leading-relaxed">{analysis.analysis_summary}</p>
       </section>
 
       {/* 2. Skills Breakdown Grid */}
@@ -42,19 +44,19 @@ export default async function GapResultPage({
         <SkillCard
           title="Matched"
           items={analysis.skills_analysis.matched}
-          icon={<CheckCircle2 className="text-green-500" />}
+          icon={<CheckCircle2 />}
           bgColor="bg-green-50"
         />
         <SkillCard
           title="Missing"
           items={analysis.skills_analysis.missing}
-          icon={<XCircle className="text-red-500" />}
+          icon={<XCircle />}
           bgColor="bg-red-50"
         />
         <SkillCard
           title="Nice to Have"
           items={analysis.skills_analysis.nice_to_have}
-          icon={<Star className="text-amber-500" />}
+          icon={<Star />}
           bgColor="bg-amber-50"
         />
       </div>

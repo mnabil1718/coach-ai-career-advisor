@@ -155,12 +155,29 @@ export async function getQuestionAnswer(interviewId: string, step: number): Prom
     return { data }
 }
 
+export async function getQuestionAnswersByInterviewId(interviewId: string): Promise<ActionResult<InterviewQuestionAnswer[]>> {
+
+    const supabase = await createClient();
+
+    const { data, error } = await supabase.from("interview_qas")
+    .select()
+    .eq("interview_id", interviewId);
+
+    if (error) {
+        console.error(error);
+        throw error;
+    }   
+
+    return { data }
+}
+
 export async function deleteInterview(interviewId: string): Promise<void> {
         const supabase = await createClient();
 
     const { error } = await supabase.from("interview")
     .delete()
-    .eq("id", interviewId);
+    .eq("id", interviewId)
+    .order("step", { ascending: true });
 
     if (error) throw error;
 }

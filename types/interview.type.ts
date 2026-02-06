@@ -1,5 +1,5 @@
 import { Json, Tables } from "@/database.types";
-import { FeedbacksArraySchema, FeedbackSchema, StartInterviewFormSchema, QuestionsArraySchema, QuestionSchema, AnswerSchema, AnswerFormSchema } from "@/schema/interview.schema";
+import { FeedbacksArraySchema, FeedbackSchema, StartInterviewFormSchema, QuestionsArraySchema, QuestionSchema, AnswerSchema, AnswerFormSchema, AnswerArraySchema } from "@/schema/interview.schema";
 import z from "zod";
 
 export enum InterviewSteps {
@@ -18,6 +18,8 @@ export type RoleLevel = "junior" | "mid" | "senior";
 export type StartInterviewFormSchemaType = z.infer<typeof StartInterviewFormSchema>;
 
 export type AnswerSchemaType = z.infer<typeof AnswerSchema>; 
+
+export type AnswerArraySchemaType = z.infer<typeof AnswerArraySchema>; 
 
 export type AnswerFormSchemaType = z.infer<typeof AnswerFormSchema>; 
 
@@ -45,4 +47,9 @@ export type StartInterviewRequest = {
     parsedCVData: Json;
     target_role: string;
     target_role_level: RoleLevel;
+}
+
+export type QuestionAnswerPair = {
+    question: QuestionSchemaType;
+    answer: AnswerSchemaType; 
 }

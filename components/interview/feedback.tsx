@@ -139,7 +139,9 @@ export function Feedback({ data, summary = false }: FeedbackProps) {
                 </Button>
               </TooltipHover>
             </div>
-            <Markdown content={data.suggestedAnswer} />
+            <div className="p-7">
+              <Markdown content={data.suggestedAnswer} />
+            </div>
           </CardContent>
         </Card>
       </div>

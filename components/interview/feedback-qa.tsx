@@ -44,7 +44,7 @@ export function FeedbackQA({
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-3 text-2xl font-semibold mt-12">
         <div className="flex w-fit justify-center items-center p-3 rounded-full bg-accent/20 border">
           <span className="text-xl">{step - 0.5}/3</span>
