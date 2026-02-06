@@ -5,7 +5,8 @@ export async function Greeting() {
 
   return (
     <h2 className="font-semibold text-2xl">
-      Welcome back, {user?.user_metadata?.name ?? "User"}
+      Welcome back,{" "}
+      {user?.user_metadata?.name ?? user?.email?.split("@")[0] ?? "User"}
     </h2>
   );
 }

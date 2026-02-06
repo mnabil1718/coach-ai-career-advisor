@@ -99,13 +99,19 @@ function Recommendations({
 }
 
 function RecommendationItem({ item }: { item: RecommendationItemType }) {
+  const map: Record<string, string> = {
+    contentQuality: "Content Quality",
+    skillsKeywords: "Skills keywords",
+    structureFormat: "Structure Format",
+    atsOptimization: "ATS Optimization",
+  };
   return (
     <Card className="border-border/50 px-6 py-10">
       <CardHeader className="">
         <div className="flex items-center justify-between mb-1">
           <ReviewBadge priority={item.priority} />
           <span className="text-sm text-muted-foreground font-medium">
-            {item.category}
+            {map[item.category]}
           </span>
         </div>
         <CardTitle className="text-xl">{item.title}</CardTitle>

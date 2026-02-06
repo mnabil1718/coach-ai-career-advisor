@@ -23,8 +23,8 @@ export async function analyzeCV(data: ParseResumeSchemaType): Promise<ActionResu
     INSTRUCTIONS:
     - Provide 5-7 concrete, actionable suggestions.
     - Order from highest priority to lowest.
-    - For the "before" field: Extract the exact, verbatim sentence or bullet point from the original CV. transform it into sentence format that is human readable.
-    - For the "after" field: Rewrite that specific line into a high-impact, results-oriented sentence. Ensure it is a complete, ready-to-use sentence, not a summary and also human readable.
+    - For the "before" field: Extract the sentence or bullet point from the original CV. transform it into sentence format that is human readable. E.g. Project list is empty.
+    - For the "after" field: Rewrite that specific line into a high-impact, results-oriented sentence. Ensure it is a complete, ready-to-use sentence, not a summary and also human readable. E.g. Projects: wordpress website, E-commerce, etc.
     - If skills are missing for their apparent role (e.g., a Frontend dev missing "React"), suggest them.
     - Return the response strictly as JSON.
   `;

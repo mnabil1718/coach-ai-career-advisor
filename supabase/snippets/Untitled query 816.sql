@@ -19,7 +19,7 @@
 -- );
 
 
-SELECT * FROM public.skill_gaps WHERE id='d966ffbe-40b1-4ce1-bcfb-9eaf01ce8437';
+SELECT * FROM public.coaching_sessions WHERE id='81f326eb-ab9c-42c2-a371-1a5fb3fbcbc3';
 
 
 

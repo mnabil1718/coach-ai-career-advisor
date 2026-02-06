@@ -77,7 +77,13 @@ export async function feedbackAnswer({ question, answer, targetRole, targetRoleL
   INSTRUCTIONS:
   - Provide constructive feedback.
   - If the answer is too short (less than 50 words), penalize the score and suggest more detail.
-  - For "suggestedAnswer", write a high-quality model response using the STAR method. But use paragraph-like human readable sentence. Don't use object format.
+  - For "suggestedAnswer", write a high-quality model response using the STAR method.
+  - CRITICAL FORMATTING:
+    - Use ### headings for each section (e.g., ### Situation).
+    - Use double-line breaks ( \n\n ) between every paragraph and header.
+    - Do not use single line breaks.
+    - Ensure the response is valid Markdown.
+    - Use bold text for key achievements or metrics.
   `;
 
   try {
@@ -92,6 +98,12 @@ export async function feedbackAnswer({ question, answer, targetRole, targetRoleL
   });
 
   const json = JSON.parse(response.text ?? "{}");
+
+  if (json.suggestedAnswer) {
+    json.suggestedAnswer = json.suggestedAnswer
+      .replace(/\n(?!\n)/g, "\n\n") // Replace single \n with \n\n
+      .trim();
+  }
 
   const parsed = FeedbackSchema.safeParse(json);
   if (!parsed.success) {

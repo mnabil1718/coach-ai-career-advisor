@@ -10,37 +10,37 @@ import {
   Star,
   StarHalf,
 } from "lucide-react";
-import { Badge } from "../ui/badge";
 import { Card, CardContent, CardDescription } from "../ui/card";
 import { Button } from "../ui/button";
 import { TooltipHover } from "../tooltip-hover";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { SummaryChart } from "../summary-chart";
+import { Markdown } from "../md";
 
 export type FeedbackProps = {
   data: FeedbackSchemaType;
-  index?: number;
+  summary?: boolean;
 };
 
-export function Feedback({ data, index }: FeedbackProps) {
+export function Feedback({ data, summary = false }: FeedbackProps) {
   const [copied, setCopied] = useState<boolean>(false);
-  const ref = useRef<HTMLParagraphElement | null>(null);
   const criterias = [
-    {
-      category: "Structure",
-      value: data.criteriaScores.structure,
-    },
     {
       category: "Communication",
       value: data.criteriaScores.communication,
     },
     {
-      category: "Content",
-      value: data.criteriaScores.content,
+      category: "Structure",
+      value: data.criteriaScores.structure,
     },
+
     {
       category: "Technical Accuracy",
       value: data.criteriaScores.technicalAccuracy,
+    },
+    {
+      category: "Content",
+      value: data.criteriaScores.content,
     },
   ];
 
@@ -55,47 +55,19 @@ export function Feedback({ data, index }: FeedbackProps) {
   };
 
   const copy = async () => {
-    const p = ref.current;
-
-    if (!p || !p.textContent) return;
-
-    await navigator.clipboard.writeText(p.textContent);
-
+    await navigator.clipboard.writeText(data.suggestedAnswer);
     setCopied(true);
-    setTimeout(() => {
-      setCopied(false);
-    }, 1000);
+    setTimeout(() => setCopied(false), 1000);
   };
 
   return (
     <div className="">
       {/* HEADER & SCORE */}
-      <div className="flex flex-col items-center text-center gap-4 mb-10">
-        {index !== undefined ? (
-          <Badge className="bg-accent/20 hover:bg-accent/20 p-1 border border-border text-foreground font-medium rounded-full text-sm px-3 shadow-none">
-            Question {index + 1} Feedback
-          </Badge>
-        ) : null}
-
-        {/* <div className="space-y-1">
-          <div className="flex items-baseline justify-center gap-2">
-            <span className="text-7xl font-bold tracking-tight">
-              {data.score}
-            </span>
-            <span className="text-2xl text-muted-foreground/50 font-medium">
-              / 5
-            </span>
-          </div>
-          <div className="flex items-center gap-1 text-chart-4">
-            {renderStars(data.score)}
-          </div>
-        </div> */}
-      </div>
 
       {/* CRITERIA MINI-GRID */}
       <div className="grid grid-cols-4 gap-4">
         {/* OVERALL SCORE */}
-        <Card className="col-span-2 flex flex-col justify-center items-center p-5 text-center ring-2">
+        <Card className="col-span-4 md:col-span-2 flex flex-col justify-center items-center p-5 text-center ring-2">
           <CardDescription>Answer Score</CardDescription>
           <div className="flex items-baseline justify-center gap-2">
             <span className="text-7xl font-bold tracking-tight">
@@ -111,8 +83,8 @@ export function Feedback({ data, index }: FeedbackProps) {
         </Card>
 
         {/* RADAR CHART */}
-        <Card className="p-3 flex justify-center items-center">
-          <SummaryChart data={criterias} />
+        <Card className=" col-span-4 md:col-span-2 p-3 flex justify-center items-center">
+          <SummaryChart data={criterias} max={5} />
         </Card>
 
         {criterias.map((item, idx) => (
@@ -124,7 +96,7 @@ export function Feedback({ data, index }: FeedbackProps) {
           </Card>
         ))}
 
-        <Card className="border-border/50 col-span-2">
+        <Card className="border-border/50 col-span-4">
           <CardContent className="flex flex-col justify-center items-start">
             <div className="flex items-center gap-2 mb-2">
               <CheckCircle2 size={18} />
@@ -138,7 +110,7 @@ export function Feedback({ data, index }: FeedbackProps) {
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 col-span-2">
+        <Card className="border-border/50 col-span-4">
           <CardContent className="flex flex-col justify-center items-start">
             <div className="flex items-center gap-2 mb-2 text-destructive">
               <CircleAlert size={18} />
@@ -152,13 +124,13 @@ export function Feedback({ data, index }: FeedbackProps) {
           </CardContent>
         </Card>
 
-        <Card className="border-none col-span-2 bg-accent/20">
+        <Card className="border-none col-span-4 bg-accent/20">
           <CardContent className="flex flex-col justify-center items-start">
             <div className="flex w-full justify-between items-end mb-4">
               <div className="flex items-center gap-2">
                 <Lightbulb size={18} />
                 <h3 className="font-bold text-sm uppercase tracking-wide">
-                  {index !== undefined ? "Suggested Answer" : "Suggestion"}
+                  {!summary ? "Suggested Answer" : "Suggestion"}
                 </h3>
               </div>
               <TooltipHover content="Copy to clipboard">
@@ -167,9 +139,7 @@ export function Feedback({ data, index }: FeedbackProps) {
                 </Button>
               </TooltipHover>
             </div>
-            <p ref={ref} className="text-muted-foreground leading-relaxed pl-7">
-              {data.suggestedAnswer}
-            </p>
+            <Markdown content={data.suggestedAnswer} />
           </CardContent>
         </Card>
       </div>

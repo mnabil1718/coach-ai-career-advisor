@@ -27,11 +27,12 @@ export const useInterview = (
   form: UseFormReturn<InterviewFormSchemaType>,
   sessionId: string,
   parsedCV: Json,
+  steps: number,
 ) => {
   const TOAST_ID = "interview:toast";
   const router = useRouter();
-  const params = useSearchParams();
-  const [step, setStep] = useState<number>(Number(params.get("step")) || 0);
+  // const params = useSearchParams();
+  const [step, setStep] = useState<number>(steps);
   const [loading, setLoading] = useState<boolean>(false);
 
   const [questions, setQuestions] = useState<QuestionsArraySchemaType>({

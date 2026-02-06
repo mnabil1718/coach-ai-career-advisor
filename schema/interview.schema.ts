@@ -2,28 +2,24 @@ import z from "zod";
 
 export const AnswerSchema = z.string().min(50, "too short. minimum should be 50 characters long").max(1000, "Cannot exceeds 1000 characters").nullable();
 
-export type AnswerSchemaType = z.infer<typeof AnswerSchema>; 
+export const AnswerFormSchema = z.object({
+  text: AnswerSchema,
+});
 
-export const InterviewFormSchema =  z.object({
+export const StartInterviewFormSchema =  z.object({
     target_role: z.string().min(3, "Cannot be empty. Minimum 3 characters long"),
     target_role_level: z.enum([ "junior", "mid", "senior" ]),
-    answers: z.tuple([
-        AnswerSchema,
-        AnswerSchema,
-        AnswerSchema,
-    ]).describe("three interview answers, each can be skipped"),
 });
 
 export const QuestionSchema = z.object({
-    id: z.number(),
+    sequence: z.number().int().min(1).max(3).describe("Represents a unique sequence in which the question appears. 1 - 3"),
     type: z.enum(["behavioral", "technical", "situational"]),
     question: z.string(),
   });
 
 
-export const QuestionsArraySchema = z.object({
-  questions: z.array(QuestionSchema).length(3),
-});
+export const QuestionsArraySchema = z.array(QuestionSchema).length(3);
+
 
 
 export const FeedbackSchema = z.object({

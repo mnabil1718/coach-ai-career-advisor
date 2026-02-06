@@ -36,10 +36,11 @@ export async function insertQAs(interviewId: string, array: QuestionsArraySchema
     if (!user) throw new Error("authentication required");
 
     const { data, error } = await supabase.from("interview_qas").insert(
-        array.questions.map((q) => ({
+        array.map((q) => ({
                 user_id: user.sub,
                 interview_id: interviewId, 
                 question: q.question, 
+                step: q.sequence,
                 type: q.type, 
             })),
     ).select();
@@ -49,20 +50,32 @@ export async function insertQAs(interviewId: string, array: QuestionsArraySchema
     return { data: data! };
 }
 
-export async function saveAnswer(qaId: string, answer: string): Promise<void> {
+// because step is unique per question/answer, we can use it to target the right question index
+export async function saveAnswer(interviewId: string, step: number, answer: string | null): Promise<void> {
     const supabase = await createClient();
     const { error } = await supabase.from("interview_qas").update({
         answer,
-    }).eq("id", qaId);
+    }).eq("step", step) // step is unique
+    .eq("interview_id", interviewId); 
 
     if (error) throw error;
 }
 
-export async function saveFeedback(qaId: string, feedback: FeedbackSchemaType): Promise<void> {
+export async function saveFeedback(interviewId: string, step: number, feedback: FeedbackSchemaType): Promise<void> {
     const supabase = await createClient();
     const { error } = await supabase.from("interview_qas").update({
         feedback,
-    }).eq("id", qaId);
+    }).eq("step", step)
+    .eq("interview_id", interviewId);
+
+    if (error) throw error;
+}
+
+export async function updateStep(interviewId: string, step: number): Promise<void> {
+    const supabase = await createClient();
+    const { error } = await supabase.from("interview").update({
+        step,
+    }).eq("id", interviewId);
 
     if (error) throw error;
 }
@@ -109,6 +122,45 @@ export async function saveInterviewResult(interviewId: string, result: FeedbackS
     const { error } = await supabase.from("interview").update({
         result,
     }).eq("id", interviewId);
+
+    if (error) throw error;
+}
+
+export async function getInterviewBySessionId(sessionId: string): Promise<ActionResult<Interview | null>> {
+        const supabase = await createClient();
+
+    const { data, error } = await supabase.from("interview").select().eq("session_id", sessionId).maybeSingle();
+
+    if (error) throw error;
+
+    return { data }
+}
+
+export async function getQuestionAnswer(interviewId: string, step: number): Promise<ActionResult<InterviewQuestionAnswer>> {
+
+        const supabase = await createClient();
+
+    const { data, error } = await supabase.from("interview_qas")
+    .select()
+    .eq("interview_id", interviewId)
+    .eq("step", step).maybeSingle();
+
+    if (error) {
+        console.error(error);
+        throw error;
+    }   
+
+    if (!data) throw new Error("Question answer not found");
+
+    return { data }
+}
+
+export async function deleteInterview(interviewId: string): Promise<void> {
+        const supabase = await createClient();
+
+    const { error } = await supabase.from("interview")
+    .delete()
+    .eq("id", interviewId);
 
     if (error) throw error;
 }

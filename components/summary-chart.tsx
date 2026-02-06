@@ -24,7 +24,13 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function SummaryChart({ data }: { data: SummaryChartProp[] }) {
+export function SummaryChart({
+  data,
+  max = 10,
+}: {
+  data: SummaryChartProp[];
+  max?: number;
+}) {
   return (
     <ChartContainer config={chartConfig} className="h-full w-full">
       <RadarChart data={data}>
@@ -35,7 +41,7 @@ export function SummaryChart({ data }: { data: SummaryChartProp[] }) {
           fontSize={12}
           className="font-medium"
         />
-        <PolarRadiusAxis domain={[0, 10]} tick={false} axisLine={false} />
+        <PolarRadiusAxis domain={[0, max]} tick={false} axisLine={false} />
         <Radar
           dataKey="value"
           fill="hsl(var(--primary))"

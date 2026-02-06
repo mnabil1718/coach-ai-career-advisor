@@ -121,7 +121,7 @@ export function SelectionDialog({
       <div className="flex w-full justify-end">
         <DialogTrigger asChild>
           <Button variant={"ghost"} className="rounded-full mb-2">
-            Select other CV
+            Replace CV
           </Button>
         </DialogTrigger>
       </div>

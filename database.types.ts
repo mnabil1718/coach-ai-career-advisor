@@ -115,6 +115,7 @@ export type Database = {
           id: string
           result: Json | null
           session_id: string
+          step: number
           target_role: string
           target_role_level: string
           user_id: string
@@ -124,6 +125,7 @@ export type Database = {
           id?: string
           result?: Json | null
           session_id?: string
+          step?: number
           target_role: string
           target_role_level: string
           user_id?: string
@@ -133,6 +135,7 @@ export type Database = {
           id?: string
           result?: Json | null
           session_id?: string
+          step?: number
           target_role?: string
           target_role_level?: string
           user_id?: string
@@ -141,7 +144,7 @@ export type Database = {
           {
             foreignKeyName: "interview_session_id_fkey"
             columns: ["session_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "coaching_sessions"
             referencedColumns: ["id"]
           },
@@ -155,6 +158,7 @@ export type Database = {
           id: string
           interview_id: string
           question: string
+          step: number
           type: string
           user_id: string
         }
@@ -165,6 +169,7 @@ export type Database = {
           id?: string
           interview_id: string
           question: string
+          step?: number
           type: string
           user_id: string
         }
@@ -175,6 +180,7 @@ export type Database = {
           id?: string
           interview_id?: string
           question?: string
+          step?: number
           type?: string
           user_id?: string
         }

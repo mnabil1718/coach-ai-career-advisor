@@ -1,5 +1,5 @@
 import { Json, Tables } from "@/database.types";
-import { FeedbacksArraySchema, FeedbackSchema, InterviewFormSchema, QuestionsArraySchema, QuestionSchema } from "@/schema/interview.schema";
+import { FeedbacksArraySchema, FeedbackSchema, StartInterviewFormSchema, QuestionsArraySchema, QuestionSchema, AnswerSchema, AnswerFormSchema } from "@/schema/interview.schema";
 import z from "zod";
 
 export enum InterviewSteps {
@@ -15,7 +15,11 @@ export type AnswerFormKey = "answers.0" | "answers.1" | "answers.2";
 
 export type RoleLevel = "junior" | "mid" | "senior";
 
-export type InterviewFormSchemaType = z.infer<typeof InterviewFormSchema>;
+export type StartInterviewFormSchemaType = z.infer<typeof StartInterviewFormSchema>;
+
+export type AnswerSchemaType = z.infer<typeof AnswerSchema>; 
+
+export type AnswerFormSchemaType = z.infer<typeof AnswerFormSchema>; 
 
 export type QuestionSchemaType = z.infer<typeof QuestionSchema>;
 
@@ -31,9 +35,9 @@ export type InterviewQuestionAnswer = Tables<"interview_qas">;
 
 export type AnswerFeedBackRequest = {
     targetRole: string;
-    targetRoleLevel: RoleLevel;
+    targetRoleLevel: string;
     question: QuestionSchemaType;
-    answer: string;
+    answer: string | null;
 };
 
 export type StartInterviewRequest = {

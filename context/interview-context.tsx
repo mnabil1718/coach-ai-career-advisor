@@ -1,9 +1,7 @@
 import { Json } from "@/database.types";
 import { useInterview } from "@/hooks/use-interview";
-import { InterviewFormSchema } from "@/schema/interview.schema";
-import { InterviewFormSchemaType } from "@/types/interview.type";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSearchParams } from "next/navigation";
 import React, { createContext, useContext } from "react";
 import { FormProvider, useForm, UseFormReturn } from "react-hook-form";
 
@@ -18,10 +16,12 @@ export const InterviewProvider = ({
   children,
   sessionId,
   parsedCV,
+  step,
 }: {
   children: React.ReactNode;
   sessionId: string;
   parsedCV: Json;
+  step: number;
 }) => {
   const form = useForm<InterviewFormSchemaType>({
     resolver: zodResolver(InterviewFormSchema),
@@ -32,7 +32,7 @@ export const InterviewProvider = ({
       answers: [null, null, null],
     },
   });
-  const interview = useInterview(form, sessionId, parsedCV);
+  const interview = useInterview(form, sessionId, parsedCV, step);
 
   return (
     <InterviewContext.Provider value={{ ...interview, form }}>
