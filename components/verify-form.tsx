@@ -47,6 +47,7 @@ import {
   saveParsedContent,
   saveReviewResult,
 } from "@/services/cv_reviews/reviews.service";
+import Link from "next/link";
 
 const TOAST_ID = "analyze";
 
@@ -91,6 +92,7 @@ export function VerifyForm({
     await saveReviewResult(session_id, analysis!);
 
     toastSuccess("Review result ready", undefined, TOAST_ID);
+
     router.push(`/sessions/${session_id}/review`);
   };
 
@@ -113,14 +115,16 @@ export function VerifyForm({
         <ProjectForm />
         <SkillForm />
 
-        <div className="flex justify-end gap-4 mt-2 mb-12">
-          <Button type="button" variant="ghost" onClick={() => router.back()}>
-            Back
-          </Button>
+        <div className="flex justify-between gap-4 mt-2 mb-12">
+          <Link href={"/dashboard"}>
+            <Button type="button" variant="ghost" className="rounded-full">
+              Back
+            </Button>
+          </Link>
           <Button
             type="submit"
             disabled={form.formState.isSubmitting}
-            className="px-4 py-3 font-bold"
+            className="px-4 py-3 font-bold rounded-full"
           >
             {form.formState.isSubmitting ? (
               <span className="flex items-center gap-2">

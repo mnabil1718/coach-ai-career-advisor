@@ -26,10 +26,14 @@ import { createSession } from "@/services/sessions/sessions.service";
 import { createCVReview } from "@/services/cv_reviews/reviews.service";
 import { useRouter } from "next/navigation";
 import { SelectedResume } from "../selected-resume";
+import { JwtPayload } from "@supabase/supabase-js";
+import { DocUpload } from "../upload";
 
-export function ResumeSelection({ resumes }: { resumes: Resume[] }) {
+export function ResumeSelection({ resumes, user }: { resumes: Resume[], user: JwtPayload }) {
   const router = useRouter();
-  const [selected, setSelected] = useState<Resume>(resumes[0]);
+
+  const selected = resumes[0];
+
   const [loadmsg, setLoadMsg] = useState<string | null>(null); // loading with status
 
   const previewHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -42,12 +46,6 @@ export function ResumeSelection({ resumes }: { resumes: Resume[] }) {
     if (url) {
       window.open(url, "_blank", "noopener,noreferrer");
     }
-  };
-
-  const selectedChangeHandler = (r: Resume) => {
-    if (r.id === selected.id) return;
-
-    setSelected(r);
   };
 
   const TOAST_PARSING_ID = "parsing";
@@ -139,18 +137,7 @@ export function SelectionDialog({
           </DialogDescription>
         </DialogHeader>
         <ul className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto p-4 flex flex-col gap-3">
-          {resumes.map((r, index) => (
-            <li
-              key={index}
-              onClick={() => selectedChangeHandler(r)}
-              className={cn(
-                r.id === selected.id ? "ring-2" : "",
-                "w-full p-5 rounded-lg border text-sm font-medium flex items-center gap-3 cursor-pointer",
-              )}
-            >
-              {r.name}
-            </li>
-          ))}
+          <DocUpload path={`resumes/${}`} />
         </ul>
         <DialogFooter>
           <DialogClose asChild>

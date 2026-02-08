@@ -1,25 +1,11 @@
--- CREATE POLICY "Users can upload to their own folder"
--- ON storage.objects
--- FOR INSERT
--- TO authenticated
--- WITH CHECK (
---   bucket_id = 'uploads' AND 
---   (storage.foldername(name))[1] = 'resumes' AND -- Must be in resumes/
---   (storage.foldername(name))[2] = auth.uid()::text -- Must match their ID
--- );
-
--- CREATE POLICY "Users can list their own resumes"
--- ON storage.objects
--- FOR SELECT
--- TO authenticated
--- USING (
---   bucket_id = 'uploads'
---   AND (storage.foldername(name))[1] = 'resumes'
---   AND (storage.foldername(name))[2] = auth.uid()::text
--- );
+CREATE POLICY "Users can update their own sessions"
+ON coaching_sessions
+FOR UPDATE
+USING (user_id = auth.uid())
+WITH CHECK (user_id = auth.uid());
 
 
-SELECT * FROM public.coaching_sessions WHERE id='81f326eb-ab9c-42c2-a371-1a5fb3fbcbc3';
+-- SELECT * FROM public.coaching_sessions WHERE id='b0029141-ba65-438c-9d8a-2372db159ed1';
 
 
 

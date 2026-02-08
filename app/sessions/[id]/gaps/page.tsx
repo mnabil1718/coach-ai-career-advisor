@@ -2,7 +2,10 @@ import { Gaps } from "@/components/gaps/gaps";
 import { ParseResumeSchema } from "@/schema/resume.schema";
 import { getCVReview } from "@/services/cv_reviews/reviews.service";
 import { getUserResumes } from "@/services/resume/resume.service";
-import { getSession } from "@/services/sessions/sessions.service";
+import {
+  getSession,
+  updateSessionStage,
+} from "@/services/sessions/sessions.service";
 
 export default async function SkillGapsPage({
   params,
@@ -10,6 +13,8 @@ export default async function SkillGapsPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+
+  await updateSessionStage(id, "SKILL_GAP");
 
   const { data: resumes } = await getUserResumes();
 

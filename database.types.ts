@@ -38,22 +38,25 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          stage: Database["public"]["Enums"]["COACHING_STAGE"] | null
+          stage: Database["public"]["Enums"]["COACHING_STAGE"]
           status: Database["public"]["Enums"]["COACHING_STATUS"]
+          title: string
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
-          stage?: Database["public"]["Enums"]["COACHING_STAGE"] | null
+          stage?: Database["public"]["Enums"]["COACHING_STAGE"]
           status?: Database["public"]["Enums"]["COACHING_STATUS"]
+          title?: string
           user_id?: string
         }
         Update: {
           created_at?: string
           id?: string
-          stage?: Database["public"]["Enums"]["COACHING_STAGE"] | null
+          stage?: Database["public"]["Enums"]["COACHING_STAGE"]
           status?: Database["public"]["Enums"]["COACHING_STATUS"]
+          title?: string
           user_id?: string
         }
         Relationships: []
@@ -169,7 +172,7 @@ export type Database = {
           id?: string
           interview_id: string
           question: string
-          step?: number
+          step: number
           type: string
           user_id: string
         }
@@ -260,7 +263,7 @@ export type Database = {
           {
             foreignKeyName: "skill_gaps_session_id_fkey"
             columns: ["session_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "coaching_sessions"
             referencedColumns: ["id"]
           },

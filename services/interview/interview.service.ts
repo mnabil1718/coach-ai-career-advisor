@@ -146,7 +146,6 @@ export async function getQuestionAnswer(interviewId: string, step: number): Prom
     .eq("step", step).maybeSingle();
 
     if (error) {
-        console.error(error);
         throw error;
     }   
 
@@ -164,7 +163,6 @@ export async function getQuestionAnswersByInterviewId(interviewId: string): Prom
     .eq("interview_id", interviewId);
 
     if (error) {
-        console.error(error);
         throw error;
     }   
 

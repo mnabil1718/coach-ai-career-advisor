@@ -9,6 +9,7 @@ export type PrimaryButtonProps = {
   loadingText?: string;
   className?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  disabled?: boolean;
 };
 
 export type ButtonType = "button" | "submit" | "reset" | undefined;
@@ -19,13 +20,14 @@ export function PrimaryButton({
   type = "button",
   loading = false,
   loadingText = "Processing...",
+  disabled = false,
   onClick = () => {},
 }: PrimaryButtonProps) {
   return (
     <Button
       type={type}
       onClick={onClick}
-      disabled={loading}
+      disabled={loading || disabled}
       className={cn(className, "font-bold rounded-full")}
     >
       {loading ? (

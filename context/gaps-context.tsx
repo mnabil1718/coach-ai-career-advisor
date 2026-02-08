@@ -1,4 +1,3 @@
-import { getCurrentUser } from "@/services/auth/user.service";
 import {
   createSkillGaps,
   saveSkillGapsResult,
@@ -47,9 +46,6 @@ export const GapsContextProvider = ({
     setLoading(true);
     toastLoading("Generating feedback...", undefined, TOAST_ID);
 
-    const { data: user } = await getCurrentUser();
-
-    console.log("PAST TOAST", sessionId, resume.id, user!);
     const { data: gap } = await createSkillGaps(
       sessionId,
       resume.id,
@@ -57,22 +53,16 @@ export const GapsContextProvider = ({
       data.skills ?? [],
     );
 
-    console.log("PAST CREATE");
     // TODO: generate AI
     const { data: analysis } = await analyzeSkillGaps(
       data.target_role,
       data.skills ?? [],
     );
 
-    console.log("PAST AI");
-    // TODO: save result to table back
     await saveSkillGapsResult(gap!.id, analysis!);
-
-    console.log(analysis);
 
     toastSuccess("Feedback generated successfully", undefined, TOAST_ID);
     setLoading(false);
-    // TODO: route push to result url
     router.push(`/sessions/${sessionId}/gaps/${gap!.id}/result`);
   };
 

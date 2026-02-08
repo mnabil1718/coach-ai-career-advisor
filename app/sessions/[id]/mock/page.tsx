@@ -8,6 +8,7 @@ import {
   questionFetcher,
   starterFetcher,
 } from "@/services/interview/mock-fetcher.service";
+import { updateSessionStage } from "@/services/sessions/sessions.service";
 import { redirect } from "next/navigation";
 
 export default async function MockPage({
@@ -19,6 +20,8 @@ export default async function MockPage({
 }) {
   const { id } = await params;
   const { interviewId, step } = await searchParams;
+
+  await updateSessionStage(id, "MOCK_INTERVIEW");
 
   const { data: interview } = await getInterviewBySessionId(id);
 

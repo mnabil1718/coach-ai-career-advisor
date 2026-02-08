@@ -15,7 +15,7 @@ import { GapsFormSchema } from "@/schema/gaps.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Required } from "../form/required-span";
 import { getSignedURL } from "@/services/storage/storage.service";
-import { SUPABASE_BUCKET_NAME } from "@/constants/file";
+import { SUPABASE_UPLOADS_BUCKET } from "@/constants/file";
 import { PrimaryButton } from "../primary-button";
 import { useState } from "react";
 import { X } from "lucide-react";
@@ -75,7 +75,10 @@ function StarterGapsScreen() {
   const previewHandler = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    const { data: url } = await getSignedURL(SUPABASE_BUCKET_NAME, resume.path);
+    const { data: url } = await getSignedURL(
+      SUPABASE_UPLOADS_BUCKET,
+      resume.path,
+    );
 
     if (url) {
       window.open(url, "_blank", "noopener,noreferrer");

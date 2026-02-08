@@ -71,15 +71,11 @@ export function MockStarter({ sessionId, parsedCV }: MockStarterProps) {
       target_role_level,
     );
 
-    console.log("PASSED CREATE");
-
     const { data: questions } = await generateQuestions(
       target_role,
       target_role_level,
       parsedCV,
     );
-
-    console.log("PASSED GENERATE QUESTIONS");
 
     await insertQAs(itv!.id, questions!);
 

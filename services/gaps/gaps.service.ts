@@ -46,3 +46,14 @@ export async function getGap(id: string): Promise<ActionResult<SkillGaps>> {
 
     return { data };
 }
+
+
+export async function getGapBySessionId(sessionId: string): Promise<ActionResult<SkillGaps>> {
+    const supabase = await createClient();
+    const { data, error } = await supabase.from("skill_gaps").select("*").eq("session_id", sessionId).maybeSingle();
+
+    if (error) throw error;
+    if (!data) throw new Error("Skill gap result not found");
+
+    return { data };
+}
