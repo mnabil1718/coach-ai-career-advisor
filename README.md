@@ -1,109 +1,112 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# Coach.ai
 
 <p align="center">
- The fastest way to build apps with Next.js and Supabase
+<img alt="Coach.ai Banner" src="[https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png](https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png)">
+<h1 align="center">Coach.ai</h1>
 </p>
 
 <p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
+<strong>Your AI-powered career coach platform.</strong> From CV optimization to acing the interview, we help job seekers land their dream roles.
 </p>
-<br/>
 
-## Features
+<p>Check out: <a href="https://coach-eight-ashy.vercel.app/">live demo</a></p>
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Proxy
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+<p align="center">
+<a href="#-how-it-works"><strong>How it Works</strong></a> ·
+<a href="#-features"><strong>Features</strong></a> ·
+<a href="#-tech-stack"><strong>Tech Stack</strong></a> ·
+<a href="#-getting-started"><strong>Getting Started</strong></a>
+</p>
 
-## Demo
+---
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+## 🚀 How it Works
 
-## Deploy to Vercel
+Landing a job is a journey. Coach.ai guides you through every step:
 
-Vercel deployment will guide you through creating a Supabase account and project.
+1. **Upload CV:** Get instant, actionable feedback on your resume.
+2. **Mock Interview:** Practice with an AI that simulates real-world hiring managers.
+3. **Analyze & Improve:** Identify skill gaps and follow personalized roadmaps.
+4. **Apply:** Head to your dream job with total confidence.
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+---
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+## ✨ Features
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+- **Smart CV Parsing:** Automatically extract data and receive a detailed review of your resume's strengths and weaknesses.
+- **AI Mock Interviews:** Realistic, conversational interview practice with instant feedback on your answers.
+- **Skill Gap Analysis:** Compare your current profile against industry standards to see what's missing.
+- **Career Resources:** Download personalized reports, pre-interview checklists, and curated learning roadmaps.
+- **Progress Tracking:** Comprehensive session history so you can pick up exactly where you left off.
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+---
 
-## Clone and run locally
+## 🛠 Tech Stack
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+Coach.ai is built with a modern, high-performance stack:
 
-2. Create a Next.js app using the Supabase Starter template npx command
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router)
+- **Database & Auth:** [Supabase](https://supabase.com/)
+- **Intelligence:** [Gemini API](https://ai.google.dev/) (Google AI)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components:** [shadcn/ui](https://ui.shadcn.com/)
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+---
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+## 🏃 Getting Started
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+### Prerequisites
 
-3. Use `cd` to change into the app's directory
+- A [Supabase](https://database.new) project
+- A [Google AI Studio](https://aistudio.google.com/) API Key for Gemini
 
-   ```bash
-   cd with-supabase-app
-   ```
+### Installation
 
-4. Rename `.env.example` to `.env.local` and update the following:
+1. **Clone the repository:**
 
-  ```env
-  NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=[INSERT SUPABASE PROJECT API PUBLISHABLE OR ANON KEY]
-  ```
-  > [!NOTE]
-  > This example uses `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, which refers to Supabase's new **publishable** key format.
-  > Both legacy **anon** keys and new **publishable** keys can be used with this variable name during the transition period. Supabase's dashboard may show `NEXT_PUBLIC_SUPABASE_ANON_KEY`; its value can be used in this example.
-  > See the [full announcement](https://github.com/orgs/supabase/discussions/29260) for more information.
+```bash
+git clone https://github.com/your-username/coach-ai.git
+cd coach-ai
 
-  Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+```
 
-5. You can now run the Next.js local development server:
+2. **Install dependencies:**
 
-   ```bash
-   npm run dev
-   ```
+```bash
+npm install
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+```
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+3. **Setup Environment Variables:**
+   Rename `.env.example` to `.env.local` and fill in your keys:
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+GEMINI_API_KEY=your_gemini_api_key
 
-## Feedback and issues
+```
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+4. **Run the development server:**
 
-## More Supabase examples
+```bash
+npm run dev
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+```
+
+Open [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000) to see the app in action!
+
+---
+
+## 📈 Deployment
+
+The easiest way to deploy Coach.ai is via [Vercel](https://vercel.com/new). Make sure to add your Supabase and Gemini environment variables in the Vercel dashboard.
+
+---
+
+> [!TIP]
+> **Coach.ai** is currently in active development. If you encounter any bugs or have feature requests, please open an issue!
+
+---
+
+Would you like me to help you write a more detailed "Skill Gap Analysis" section or perhaps create a sample "Learning Roadmap" table for the README?
