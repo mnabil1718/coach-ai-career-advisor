@@ -1,7 +1,6 @@
 # Coach.ai
 
 <p align="center">
-<img alt="Coach.ai Banner" src="[https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png](https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png)">
 <h1 align="center">Coach.ai</h1>
 </p>
 
@@ -108,5 +107,3 @@ The easiest way to deploy Coach.ai is via [Vercel](https://vercel.com/new). Make
 > **Coach.ai** is currently in active development. If you encounter any bugs or have feature requests, please open an issue!
 
 ---
-
-Would you like me to help you write a more detailed "Skill Gap Analysis" section or perhaps create a sample "Learning Roadmap" table for the README?
