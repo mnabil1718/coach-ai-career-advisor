@@ -1,5 +1,11 @@
 "use server";
 
+if (typeof window === 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  global.DOMMatrix = class DOMMatrix {};
+}
+
 import { ActionResult } from "@/types/action.type";
 import officeParser from "officeparser";
 
