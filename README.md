@@ -1,3 +1,5 @@
+<img width="1797" height="924" alt="Screenshot from 2026-03-13 07-29-02" src="https://github.com/user-attachments/assets/63b3843b-80f0-4d14-ac39-61b2a577b75e" />
+
 # Coach.ai
 
 <p align="center">
