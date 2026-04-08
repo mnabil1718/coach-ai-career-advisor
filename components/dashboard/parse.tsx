@@ -11,52 +11,61 @@ import { formatParse } from "@/services/llm/format-parse.service";
 import { createSession } from "@/services/sessions/sessions.service";
 import { createCVReview } from "@/services/cv_reviews/reviews.service";
 import { useRouter } from "next/navigation";
+import { tryCatchWrapper } from "@/utils/try-catch-wrapper";
 
 const TOAST_PARSING_ID = "parsing";
 
 export function Parse({ resume }: { resume: Resume | undefined }) {
-  const router = useRouter();
-  const [loadMsg, setLoadMsg] = useState<string>("");
+    const router = useRouter();
+    const [loadMsg, setLoadMsg] = useState<string>("");
 
-  const parse = async () => {
-    if (!resume) {
-      toastError("No resume found");
-      return;
-    }
+    const parse = async () => {
+        if (!resume) {
+            toastError("No resume found");
+            return;
+        }
 
-    setLoadMsg("parsing...");
-    toastLoading("Parsing document...", undefined, TOAST_PARSING_ID);
-    const { data: blob } = await downloadFile(
-      SUPABASE_UPLOADS_BUCKET,
-      resume.path,
+        const result = await tryCatchWrapper(async () => {
+            setLoadMsg("parsing...");
+            toastLoading("Parsing document...", undefined, TOAST_PARSING_ID);
+
+            const { data: blob } = await downloadFile(
+                SUPABASE_UPLOADS_BUCKET,
+                resume.path,
+            );
+            const { data: txt } = await parseFromArrayBuffer(blob!);
+
+            setLoadMsg("formatting...");
+            toastLoading("Generating Response...", undefined, TOAST_PARSING_ID, true);
+            const { data: json } = await formatParse(txt!);
+            const { data: session } = await createSession();
+            await createCVReview({
+                session_id: session!.id,
+                resume_id: resume.id,
+                parsed_content: json!,
+            });
+
+            setLoadMsg("");
+            toastSuccess("Parsing finished", undefined, TOAST_PARSING_ID);
+
+            return { session }
+        }, TOAST_PARSING_ID);
+
+        if (!result) {
+            setLoadMsg("")
+            return
+        };
+
+        router.push(`/sessions/${result.session!.id}/verify`);
+    };
+
+    return (
+        <PrimaryButton
+            text="Start new session"
+            loading={loadMsg !== ""}
+            loadingText={loadMsg}
+            disabled={!resume || loadMsg !== ""}
+            onClick={parse}
+        />
     );
-    const { data: txt } = await parseFromArrayBuffer(blob!);
-
-    setLoadMsg("formatting...");
-    toastLoading("Generating Response...", undefined, TOAST_PARSING_ID, true);
-    const { data: json } = await formatParse(txt!);
-
-    const { data: session } = await createSession();
-    await createCVReview({
-      session_id: session!.id,
-      resume_id: resume.id,
-      parsed_content: json!,
-    });
-
-    setLoadMsg("");
-
-    toastSuccess("Parsing finished", undefined, TOAST_PARSING_ID);
-
-    router.push(`/sessions/${session!.id}/verify`);
-  };
-
-  return (
-    <PrimaryButton
-      text="Start new session"
-      loading={loadMsg !== ""}
-      loadingText={loadMsg}
-      disabled={!resume || loadMsg !== ""}
-      onClick={parse}
-    />
-  );
 }

@@ -7,8 +7,8 @@ import { AnswerSchema, FeedbackSchema, QuestionSchema } from "@/schema/interview
 
 
 // step is 0 (starter)
-export async function starterFetcher(sessionId: 
-    string, step: number, 
+export async function starterFetcher(sessionId:
+    string, step: number,
     interviewId: string | string[] | undefined)
     : Promise<{ sessionId: string, parsedCV: ParseResumeSchemaType }> {
     if (Array.isArray(interviewId)) {
@@ -16,7 +16,6 @@ export async function starterFetcher(sessionId:
     }
 
     const { data: review } = await getCVReview(sessionId);
-
     const parsedCV = validateData<ParseResumeSchemaType>(
         ParseResumeSchema,
         review!.parsed_content,
@@ -26,8 +25,8 @@ export async function starterFetcher(sessionId:
 }
 
 // step is decimal (feedback)
-export async function feedbackFetcher(sessionId: string, 
-    step: number, 
+export async function feedbackFetcher(sessionId: string,
+    step: number,
     interviewId: string | string[] | undefined)
     : Promise<{ step: number, feedback: FeedbackSchemaType | undefined, interview: Interview | null | undefined }> {
 
@@ -56,10 +55,10 @@ export async function questionFetcher(sessionId: string, step: number, interview
     feedback?: FeedbackSchemaType,
 }> {
 
-        if (Array.isArray(interviewId)) {
+    if (Array.isArray(interviewId)) {
         throw new Error("Invalid interview id");
     }
-    
+
     const { data: itv } = await getInterviewBySessionId(sessionId);
 
     const { data: qa } = await getQuestionAnswer(itv!.id, step);
@@ -78,7 +77,7 @@ export async function questionFetcher(sessionId: string, step: number, interview
 
     let feedback: FeedbackSchemaType | undefined = undefined;
 
-        if (qa?.feedback) {
+    if (qa?.feedback) {
         feedback = validateData<FeedbackSchemaType>(FeedbackSchema, qa?.feedback);
     }
 

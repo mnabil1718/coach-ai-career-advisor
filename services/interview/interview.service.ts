@@ -6,43 +6,36 @@ import { ActionResult } from "@/types/action.type";
 import { FeedbackSchemaType, Interview, InterviewQuestionAnswer, QuestionsArraySchemaType } from "@/types/interview.type";
 
 export async function createInterview(sessionId: string, targetRole: string, level: string): Promise<ActionResult<Interview>> {
+    const supabase = await createClient();
+    const { data: user } = await getCurrentUser();
+    if (!user) throw new Error("authentication required");
 
-        const supabase = await createClient();
-    
-        const {data: user} = await getCurrentUser();
-    
-        if (!user) throw new Error("authentication required");
-    
-        const { data, error } = await supabase.from("interview").insert({
-            session_id: sessionId,
-            user_id: user.sub,
-            target_role: targetRole,
-            target_role_level: level,
-        }).select("*").single();
-    
-        if (error) throw error;
+    const { data, error } = await supabase.from("interview").insert({
+        session_id: sessionId,
+        user_id: user.sub,
+        target_role: targetRole,
+        target_role_level: level,
+    }).select("*").single();
 
+    if (error) throw error;
     return { data };
-
 }
 
 // insert questions into question answers table (QA)
 export async function insertQAs(interviewId: string, array: QuestionsArraySchemaType): Promise<ActionResult<InterviewQuestionAnswer[]>> {
 
     const supabase = await createClient();
-
-    const {data: user} = await getCurrentUser();
-    
+    const { data: user } = await getCurrentUser();
     if (!user) throw new Error("authentication required");
 
     const { data, error } = await supabase.from("interview_qas").insert(
         array.map((q) => ({
-                user_id: user.sub,
-                interview_id: interviewId, 
-                question: q.question, 
-                step: q.sequence,
-                type: q.type, 
-            })),
+            user_id: user.sub,
+            interview_id: interviewId,
+            question: q.question,
+            step: q.sequence,
+            type: q.type,
+        })),
     ).select();
 
     if (error) throw error;
@@ -56,7 +49,7 @@ export async function saveAnswer(interviewId: string, step: number, answer: stri
     const { error } = await supabase.from("interview_qas").update({
         answer,
     }).eq("step", step) // step is unique
-    .eq("interview_id", interviewId); 
+        .eq("interview_id", interviewId);
 
     if (error) throw error;
 }
@@ -66,7 +59,7 @@ export async function saveFeedback(interviewId: string, step: number, feedback: 
     const { error } = await supabase.from("interview_qas").update({
         feedback,
     }).eq("step", step)
-    .eq("interview_id", interviewId);
+        .eq("interview_id", interviewId);
 
     if (error) throw error;
 }
@@ -82,7 +75,7 @@ export async function updateStep(interviewId: string, step: number): Promise<voi
 
 export async function getInterview(interviewId: string): Promise<ActionResult<Interview>> {
     const supabase = await createClient();
-    
+
     const { data, error } = await supabase
         .from("interview")
         .select()
@@ -90,13 +83,13 @@ export async function getInterview(interviewId: string): Promise<ActionResult<In
         .single();
 
     if (error) throw error;
-    
+
     return { data: data! };
 }
 
 export async function getInterviewWithRelations(interviewId: string) {
     const supabase = await createClient();
-    
+
     const { data, error } = await supabase
         .from("interview")
         .select(`
@@ -127,27 +120,28 @@ export async function saveInterviewResult(interviewId: string, result: FeedbackS
 }
 
 export async function getInterviewBySessionId(sessionId: string): Promise<ActionResult<Interview | null>> {
-        const supabase = await createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase.from("interview").select().eq("session_id", sessionId).maybeSingle();
 
     if (error) throw error;
+
 
     return { data }
 }
 
 export async function getQuestionAnswer(interviewId: string, step: number): Promise<ActionResult<InterviewQuestionAnswer>> {
 
-        const supabase = await createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase.from("interview_qas")
-    .select()
-    .eq("interview_id", interviewId)
-    .eq("step", step).maybeSingle();
+        .select()
+        .eq("interview_id", interviewId)
+        .eq("step", step).maybeSingle();
 
     if (error) {
         throw error;
-    }   
+    }
 
     if (!data) throw new Error("Question answer not found");
 
@@ -159,23 +153,22 @@ export async function getQuestionAnswersByInterviewId(interviewId: string): Prom
     const supabase = await createClient();
 
     const { data, error } = await supabase.from("interview_qas")
-    .select()
-    .eq("interview_id", interviewId);
+        .select()
+        .eq("interview_id", interviewId);
 
     if (error) {
         throw error;
-    }   
+    }
 
     return { data }
 }
 
 export async function deleteInterview(interviewId: string): Promise<void> {
-        const supabase = await createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase.from("interview")
-    .delete()
-    .eq("id", interviewId)
-    .order("step", { ascending: true });
+        .delete()
+        .eq("id", interviewId)
 
     if (error) throw error;
 }

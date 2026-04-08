@@ -8,11 +8,11 @@ export async function login({ email, password }: { email: string, password: stri
     const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
-      });
+    });
 
-      if (error) {
+    if (error) {
         return { error: error.message };
-      }
+    }
 
-      return { error: null };
+    return { error: null };
 }

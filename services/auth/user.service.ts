@@ -6,9 +6,9 @@ import { JwtPayload } from "@supabase/supabase-js";
 
 
 export async function getCurrentUser(): Promise<ActionResult<JwtPayload | undefined>> {
-      const supabase = await createClient();
-      const { data } = await supabase.auth.getClaims();
-      const user = data?.claims;
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getClaims();
+    const user = data?.claims;
 
-      return { data: user };
+    return { data: user };
 }
