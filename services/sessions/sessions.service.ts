@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { ActionResult } from "@/types/action.type";
-import { CoachingStage, Session, SessionWithRelations } from "@/types/session.type";
+import { CoachingStage, CoachingStatus, Session, SessionWithRelations } from "@/types/session.type";
 import { redirect } from "next/navigation";
 
 export async function createSession(): Promise<ActionResult<Session>> {
@@ -16,13 +16,10 @@ export async function createSession(): Promise<ActionResult<Session>> {
     return { data };
 }
 
-
-
-
 export async function getSession(id: string): Promise<ActionResult<Session>> {
     const supabase = await createClient();
 
-    const {data, error} = await supabase.from("coaching_sessions").select("*").eq("id", id).single();
+    const { data, error } = await supabase.from("coaching_sessions").select("*").eq("id", id).single();
 
     if (error) throw error;
 
@@ -52,15 +49,15 @@ export async function getSessionWithRelations(id: string): Promise<ActionResult<
         .eq("id", id)
         .single();
 
-  if (error) throw error;
+    if (error) throw error;
 
-  return { data };
+    return { data };
 }
 
 export async function getSessions(): Promise<ActionResult<Session[]>> {
     const supabase = await createClient();
 
-    const {data, error} = await supabase.from("coaching_sessions").select("*").order("created_at", { ascending: false });
+    const { data, error } = await supabase.from("coaching_sessions").select("*").order("created_at", { ascending: false });
 
     if (error) throw error;
 
@@ -80,15 +77,10 @@ export async function renameSession(id: string, title: string): Promise<void> {
 }
 
 export async function updateSessionStage(id: string, stage: CoachingStage): Promise<void> {
-
     const supabase = await createClient();
-
     const { data: session } = await getSession(id);
-
     if (!session) throw new Error("Session not found");
-
     if (stage === "MOCK_INTERVIEW" && session.stage !== "CV_REVIEW") return;
-
     if (stage === "SKILL_GAP" && session.stage !== "MOCK_INTERVIEW") return;
 
     const { error } = await supabase.from("coaching_sessions").update({
@@ -109,27 +101,20 @@ export async function deleteSession(id: string): Promise<void> {
 
 export async function resumeSession(id: string): Promise<void> {
 
-    const {data: session} = await getSessionWithRelations(id);
-
+    const { data: session } = await getSessionWithRelations(id);
     if (!session) throw new Error("Session not found");
-
-    if (session.status === "COMPLETED") return;
+    // if (session.status === "COMPLETED") return;
 
     const gap = session.skill_gaps;
-
     if (gap) {
-        
         if (gap.result) redirect(`/sessions/${id}/gaps/${gap.id}/result`);
-
         redirect(`/sessions/${id}/gaps/${gap.id}`);
     }
 
     const interview = session.interview;
 
     if (interview) {
-
         if (interview.result) redirect(`/sessions/${id}/mock/${interview.id}/result`);
-
         redirect(`/sessions/${id}/mock?interviewId=${interview.id}&step=${interview.step}`);
 
     }
@@ -138,9 +123,19 @@ export async function resumeSession(id: string): Promise<void> {
 
     if (review) {
         if (review.review) redirect(`/sessions/${id}/review`);
-
         redirect(`/sessions/${id}/verify`);
     }
+}
 
+export async function updateSessionStatus(id: string, status: CoachingStatus): Promise<void> {
+    const supabase = await createClient();
+    const { data: session } = await getSession(id);
+    if (!session) throw new Error("Session not found");
+
+    const { error } = await supabase.from("coaching_sessions").update({
+        status,
+    }).eq("id", id);
+
+    if (error) throw error;
 }
 

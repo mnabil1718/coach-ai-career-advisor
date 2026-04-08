@@ -8,23 +8,31 @@ import {
     SkillGapAnalysisSchemaType,
 } from "@/schema/gaps.schema";
 import { getGap } from "@/services/gaps/gaps.service";
+import { updateSessionStatus } from "@/services/sessions/sessions.service";
 import { validateData } from "@/utils/parse";
 import { CheckCircle2, XCircle, Star, Clock, BookOpen } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function GapResultPage({
     params,
 }: {
     params: Promise<{ id: string; gapId: string }>;
 }) {
-    const { gapId } = await params;
-
+    const { id, gapId } = await params;
     const { data: gap } = await getGap(gapId);
-
     const analysis = validateData<SkillGapAnalysisSchemaType>(
         SkillGapAnalysisSchema,
         gap!.result,
     );
+
+    const finish = async () => {
+        "use server"
+        await updateSessionStatus(id, "COMPLETED");
+        redirect("/dashboard");
+    }
+
+
 
     return (
         <div className="max-w-4xl mx-auto p-5 mt-12 space-y-8">
@@ -76,7 +84,7 @@ export default async function GapResultPage({
                         >
                             <div className="flex flex-wrap justify-between items-start mb-4 gap-2">
                                 <div>
-                                    <h3 className="text-lg font-bold">{item.skill_name}</h3>
+                                    <h3 className="mb-4 text-lg font-bold">{item.skill_name}</h3>
                                     <span
                                         className={`text-xs font-bold uppercase px-2 py-1 rounded ${item.priority === "High"
                                             ? "bg-destructive/10 text-destructive-foreground"
@@ -105,7 +113,7 @@ export default async function GapResultPage({
                                             return (
                                                 <li
                                                     key={i}
-                                                    className="flex items-center justify-between text-sm p-2 bg-muted rounded border border-border/30"
+                                                    className="flex items-center justify-between text-sm p-2 bg-muted/30 rounded border border-border/30"
                                                 >
                                                     <span>
                                                         <span>
@@ -139,11 +147,11 @@ export default async function GapResultPage({
                         document={<GapAnalysisPDF data={analysis} />}
                         buttonText="Download Report"
                     />
-                    <Link href={"/dashboard"}>
-                        <Button className="font-semibold px-4 py-2 rounded-full">
+                    <form action={finish}>
+                        <Button type="submit" className="font-semibold px-4 py-2 rounded-full">
                             Finish Session
                         </Button>
-                    </Link>
+                    </form>
                 </div>
             </section>
         </div>

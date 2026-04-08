@@ -142,11 +142,9 @@ function DropdownAction({
             <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
             <DropdownMenuContent>
                 <DropdownMenuGroup>
-                    {session.status === "PENDING" && (
-                        <DropdownMenuItem onClick={navigator}>
-                            <Play /> Resume
-                        </DropdownMenuItem>
-                    )}
+                    <DropdownMenuItem onClick={navigator}>
+                        <Play /> {session.status === "PENDING" ? "Resume" : "View"}
+                    </DropdownMenuItem>
                     <DropdownMenuItem
                         onSelect={(e) => e.preventDefault()}
                         className="text-destructive"

@@ -12,7 +12,6 @@ import officeParser from "officeparser";
 export async function parseFromArrayBuffer(file: Blob): Promise<ActionResult<string>> {
   try {
     const arrayBuffer = await file.arrayBuffer();
-    // const buffer = Buffer.from(arrayBuffer);
     const ast = await officeParser.parseOffice(arrayBuffer);
 
     return { data: ast.toText() };

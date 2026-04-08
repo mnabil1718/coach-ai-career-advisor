@@ -6,7 +6,7 @@ import { toastError, toastLoading, toastSuccess } from "@/utils/toast";
 import { downloadFile } from "@/services/storage/storage.service";
 import { SUPABASE_UPLOADS_BUCKET } from "@/constants/file";
 import { Resume } from "@/types/resume.type";
-import { parseFromArrayBuffer } from "@/services/processing/parser.service.";
+import { parseFromArrayBuffer } from "@/services/processing/parser.service";
 import { formatParse } from "@/services/llm/format-parse.service";
 import { createSession } from "@/services/sessions/sessions.service";
 import { createCVReview } from "@/services/cv_reviews/reviews.service";
