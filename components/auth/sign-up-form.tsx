@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
+
 import { GoogleSignInForm } from "@/app/auth/google/sign-in";
 import { BackLink } from "./backlink";
 import { Or } from "./or";

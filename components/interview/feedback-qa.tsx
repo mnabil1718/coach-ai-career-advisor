@@ -4,7 +4,9 @@ import { FeedbackSchemaType, Interview } from "@/types/interview.type";
 import { Feedback } from "./feedback";
 import { Button } from "../ui/button";
 import { updateStep } from "@/services/interview/interview.service";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
+
 import { FinishInterviewButton } from "./finish-interview-button";
 
 export function FeedbackQA({

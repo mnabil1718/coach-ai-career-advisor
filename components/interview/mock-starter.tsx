@@ -4,7 +4,9 @@ import { StartInterviewFormSchema } from "@/schema/interview.schema";
 import { StartInterviewFormSchemaType } from "@/types/interview.type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+
+import { useRouter } from "nextjs-toploader/app";
 
 import {
     Field,
@@ -27,7 +29,7 @@ import { PrimaryButton } from "../primary-button";
 import { toastLoading, toastSuccess } from "@/utils/toast";
 import {
     createInterview,
-    insertQAs,
+    upsertQAs,
 } from "@/services/interview/interview.service";
 import { generateQuestions } from "@/services/llm/interview.service";
 import { ParseResumeSchemaType } from "@/schema/resume.schema";
@@ -70,6 +72,8 @@ export function MockStarter({ sessionId, parsedCV }: MockStarterProps) {
             const target_role_level = form.getValues("target_role_level");
             let itvID = sp.get("interviewId")
 
+            console.log("ITV ID: ", itvID)
+
             if (!itvID) {
                 const { data: itv } = await createInterview(
                     sessionId,
@@ -77,6 +81,7 @@ export function MockStarter({ sessionId, parsedCV }: MockStarterProps) {
                     target_role_level,
                 );
                 itvID = itv ? itv.id : null
+                console.log("ITV: ", itv)
             }
 
             const { data: questions } = await generateQuestions(
@@ -84,9 +89,12 @@ export function MockStarter({ sessionId, parsedCV }: MockStarterProps) {
                 target_role_level,
                 parsedCV,
             );
+            console.log("Q generated", questions)
 
             if (itvID) {
-                await insertQAs(itvID, questions!);
+                await upsertQAs(itvID, questions!);
+                console.log("inserted", itvID, questions)
+
             }
 
             if (!itvID) return false

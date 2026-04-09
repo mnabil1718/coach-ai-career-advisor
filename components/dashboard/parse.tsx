@@ -10,7 +10,7 @@ import { parseFromArrayBuffer } from "@/services/processing/parser.service";
 import { formatParse } from "@/services/llm/format-parse.service";
 import { createSession } from "@/services/sessions/sessions.service";
 import { createCVReview } from "@/services/cv_reviews/reviews.service";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { tryCatchWrapper } from "@/utils/try-catch-wrapper";
 
 const TOAST_PARSING_ID = "parsing";

@@ -22,13 +22,13 @@ export async function createInterview(sessionId: string, targetRole: string, lev
 }
 
 // insert questions into question answers table (QA)
-export async function insertQAs(interviewId: string, array: QuestionsArraySchemaType): Promise<ActionResult<InterviewQuestionAnswer[]>> {
+export async function upsertQAs(interviewId: string, array: QuestionsArraySchemaType): Promise<ActionResult<InterviewQuestionAnswer[]>> {
 
     const supabase = await createClient();
     const { data: user } = await getCurrentUser();
     if (!user) throw new Error("authentication required");
 
-    const { data, error } = await supabase.from("interview_qas").insert(
+    const { data, error } = await supabase.from("interview_qas").upsert(
         array.map((q) => ({
             user_id: user.sub,
             interview_id: interviewId,
@@ -36,6 +36,9 @@ export async function insertQAs(interviewId: string, array: QuestionsArraySchema
             step: q.sequence,
             type: q.type,
         })),
+        {
+            onConflict: "interview_id,step"
+        }
     ).select();
 
     if (error) throw error;

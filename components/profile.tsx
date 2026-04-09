@@ -14,7 +14,7 @@ import { getInitials } from "@/utils/name";
 import { JwtPayload } from "@supabase/supabase-js";
 import { Gauge } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 
 export function Profile({ user }: { user: JwtPayload }) {
     const router = useRouter();

@@ -11,7 +11,7 @@ import {
     renameSession,
     resumeSession,
 } from "@/services/sessions/sessions.service";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -82,7 +82,7 @@ export function SessionHistoryItem({ session }: { session: Session }) {
     };
 
     return (
-        <li className="text-sm px-1 rounded-lg">
+        <li className="text-sm px-1 py-2">
             {/* <div className="mb-2 flex justify-end items-center gap-1 text-xs text-muted-foreground/70"> */}
             {/*     {focused ? ( */}
             {/*         <span>Hit Enter to save</span> */}

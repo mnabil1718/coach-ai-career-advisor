@@ -8,7 +8,9 @@ import {
     QuestionSchemaType,
 } from "@/types/interview.type";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
+
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import { Field, FieldDescription, FieldError } from "../ui/field";
