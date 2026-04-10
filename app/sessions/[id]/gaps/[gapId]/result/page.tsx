@@ -8,7 +8,7 @@ import {
     SkillGapAnalysisSchemaType,
 } from "@/schema/gaps.schema";
 import { getGap } from "@/services/gaps/gaps.service";
-import { updateSessionStatus } from "@/services/sessions/sessions.service";
+import { getSession, updateSessionStatus } from "@/services/sessions/sessions.service";
 import { validateData } from "@/utils/parse";
 import { CheckCircle2, XCircle, Star, Clock, BookOpen } from "lucide-react";
 import Link from "next/link";
@@ -20,6 +20,7 @@ export default async function GapResultPage({
     params: Promise<{ id: string; gapId: string }>;
 }) {
     const { id, gapId } = await params;
+    const { data: session } = await getSession(id);
     const { data: gap } = await getGap(gapId);
     const analysis = validateData<SkillGapAnalysisSchemaType>(
         SkillGapAnalysisSchema,
@@ -117,13 +118,13 @@ export default async function GapResultPage({
                                                 >
                                                     <span>
                                                         <span>
-                                                            {platform}:
+                                                            {platform}
                                                         </span>{" "}
                                                         {title}
                                                     </span>
-                                                    <span className="text-sm">
-                                                        {cost}
-                                                    </span>
+                                                    {/* <span className="text-sm"> */}
+                                                    {/*     {cost} */}
+                                                    {/* </span> */}
                                                 </li>
                                             );
                                         })}
@@ -147,11 +148,23 @@ export default async function GapResultPage({
                         document={<GapAnalysisPDF data={analysis} />}
                         buttonText="Download Report"
                     />
-                    <form action={finish}>
-                        <Button type="submit" className="font-semibold px-4 py-2 rounded-full">
-                            Finish Session
-                        </Button>
-                    </form>
+                    {
+                        session && session.status === "PENDING" ?
+                            (
+                                <form action={finish}>
+                                    <Button type="submit" className="font-semibold px-4 py-2 rounded-full">
+                                        Finish Session
+                                    </Button>
+                                </form>
+                            ) :
+                            (
+                                <Link href={"/dashboard"}>
+                                    <Button className="font-semibold px-4 py-2 rounded-full">
+                                        Go to Dashboard
+                                    </Button>
+                                </Link>
+                            )
+                    }
                 </div>
             </section>
         </div>
@@ -174,7 +187,7 @@ function SkillCard({
                 <CardTitle className="font-bold">{title}</CardTitle>
             </CardHeader>
             <CardContent>
-                <ul className="flex flex-wrap gap-2 list-disc px-4">
+                <ul className="list-disc px-4">
                     {items.length > 0 ? (
                         items.map((skill, i) => (
                             <li
