@@ -72,8 +72,6 @@ export function MockStarter({ sessionId, parsedCV }: MockStarterProps) {
             const target_role_level = form.getValues("target_role_level");
             let itvID = sp.get("interviewId")
 
-            console.log("ITV ID: ", itvID)
-
             if (!itvID) {
                 const { data: itv } = await createInterview(
                     sessionId,
@@ -81,7 +79,6 @@ export function MockStarter({ sessionId, parsedCV }: MockStarterProps) {
                     target_role_level,
                 );
                 itvID = itv ? itv.id : null
-                console.log("ITV: ", itv)
             }
 
             const { data: questions } = await generateQuestions(
@@ -89,12 +86,9 @@ export function MockStarter({ sessionId, parsedCV }: MockStarterProps) {
                 target_role_level,
                 parsedCV,
             );
-            console.log("Q generated", questions)
 
             if (itvID) {
                 await upsertQAs(itvID, questions!);
-                console.log("inserted", itvID, questions)
-
             }
 
             if (!itvID) return false

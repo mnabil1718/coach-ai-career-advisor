@@ -6,4 +6,4 @@ export enum GEMINI {
     GEMMA_3_27B = "gemma-3-27b-it",
 };
 
-export const SELECTED_MODEL = GEMINI.GEMINI_2_5_LITE;
+export const SELECTED_MODEL = GEMINI.GEMINI_3_FLASH;

@@ -464,7 +464,7 @@ export function EducationForm() {
                                 >
                                     <Trash2 className="w-4 h-4" />
                                 </Button>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                <div className="grid md:grid-cols-2 gap-4 mt-4">
                                     <Field className="col-span-2">
                                         <FieldLabel>Institution</FieldLabel>
                                         <Input
@@ -472,14 +472,14 @@ export function EducationForm() {
                                             placeholder="University Name"
                                         />
                                     </Field>
-                                    <Field>
+                                    <Field className="col-span-2 md:col-span-1">
                                         <FieldLabel>Degree</FieldLabel>
                                         <Input
                                             {...form.register(`education.${index}.degree`)}
                                             placeholder="Bachelor's, Master's, etc."
                                         />
                                     </Field>
-                                    <Field>
+                                    <Field className="col-span-2 md:col-span-1">
                                         <FieldLabel>Field of Study</FieldLabel>
                                         <Input
                                             {...form.register(`education.${index}.fieldOfStudy`)}
@@ -559,14 +559,14 @@ export function ProjectForm() {
                                     <Trash2 className="w-4 h-4" />
                                 </Button>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                    <Field className="col-span-1">
+                                    <Field className="col-span-2 md:col-span-1">
                                         <FieldLabel>Project Name</FieldLabel>
                                         <Input
                                             {...form.register(`projects.${index}.name`)}
                                             placeholder="Portfolio Website"
                                         />
                                     </Field>
-                                    <Field className="col-span-1">
+                                    <Field className="col-span-2 md:col-span-1">
                                         <FieldLabel>Project Link</FieldLabel>
                                         <InputGroup>
                                             <InputGroupInput

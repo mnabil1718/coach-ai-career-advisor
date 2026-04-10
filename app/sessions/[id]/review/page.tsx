@@ -8,6 +8,7 @@ import { getSession, updateSessionStage } from "@/services/sessions/sessions.ser
 import { validateData } from "@/utils/parse";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { NextButton } from "./next-button";
 
 export default async function ReviewPage({
     params,
@@ -22,12 +23,6 @@ export default async function ReviewPage({
         AnalysisSchema,
         review!.review,
     );
-
-    async function handleNext() {
-        "use server";
-        await updateSessionStage(id, "MOCK_INTERVIEW");
-        redirect(`/sessions/${id}/mock`);
-    }
 
     return (
         <div className="w-full flex-1 flex flex-col items-center">
@@ -48,9 +43,7 @@ export default async function ReviewPage({
                     <Link href={`/sessions/${session?.id}/verify`}>
                         <Button variant={"ghost"}>Back</Button>
                     </Link>
-                    <form action={handleNext}>
-                        <Button type="submit" className="font-semibold">Next: Mock interview</Button>
-                    </form>
+                    <NextButton id={id} />
                 </div>
             </div>
         </div>

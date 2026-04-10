@@ -29,6 +29,10 @@ import {
 } from "@/services/interview/interview.service";
 import { feedbackAnswer } from "@/services/llm/interview.service";
 import { Lightbulb, MessageSquare } from "lucide-react";
+import { tryCatchWrapper } from "@/utils/try-catch-wrapper";
+import { toastLoading, toastSuccess } from "@/utils/toast";
+
+const TOAST_ID = "mock:next";
 
 export type MockQuestionProps = {
     step: number;
@@ -91,19 +95,29 @@ export function MockQuestion({
         const valid = await form.trigger("text");
 
         if (valid) {
-            const answer = form.getValues("text");
-            await saveAnswer(interview.id, step, answer);
 
-            const { data: feedback } = await feedbackAnswer({
-                answer,
-                question,
-                targetRole: interview.target_role,
-                targetRoleLevel: interview.target_role_level,
-            });
+            const result = await tryCatchWrapper(async () => {
+                toastLoading("Processing answer...", undefined, TOAST_ID);
+                const answer = form.getValues("text");
+                await saveAnswer(interview.id, step, answer);
 
-            await saveFeedback(interview.id, step, feedback!);
+                toastLoading("Generating feedback...", undefined, TOAST_ID, true);
+                const { data: feedback } = await feedbackAnswer({
+                    answer,
+                    question,
+                    targetRole: interview.target_role,
+                    targetRoleLevel: interview.target_role_level,
+                });
 
-            await updateStep(interview.id, step + 0.5);
+                await saveFeedback(interview.id, step, feedback!);
+                await updateStep(interview.id, step + 0.5);
+
+                toastSuccess("Feedback is ready", undefined, TOAST_ID)
+                return true
+
+            }, TOAST_ID);
+
+            if (!result) return;
 
             const params = new URLSearchParams();
             params.set("interviewId", interview.id);
@@ -125,19 +139,9 @@ export function MockQuestion({
     };
 
     const renderSubmit = (): React.ReactNode => {
-        if (!feedback) {
-            return (
-                <PrimaryButton
-                    text="Submit"
-                    type={"submit"}
-                    loading={form.formState.isSubmitting}
-                />
-            );
-        }
-
         return (
             <PrimaryButton
-                text="Update"
+                text={!feedback ? "Submit" : "Update"}
                 type={"submit"}
                 loading={form.formState.isSubmitting}
             />

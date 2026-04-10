@@ -4,9 +4,10 @@ import { SELECTED_MODEL } from "@/constants/model";
 import { ai } from "@/lib/gemini/gemini";
 import { ParseResumeResponse, ParseResumeResponseType, } from "@/schema/resume.schema";
 import { ActionResult } from "@/types/action.type";
+import { ApiError } from "@google/genai"
 
 export async function formatParse(txt: string): Promise<ActionResult<ParseResumeResponseType>> {
-const prompt = `
+    const prompt = `
         TASK: Extract resume data.
         
         CRITICAL INSTRUCTION: 
@@ -18,27 +19,31 @@ const prompt = `
         ${txt}
       `;
 
-  try {
+    try {
 
-  const response = await ai.models.generateContent({
-    model: SELECTED_MODEL,
-    contents: prompt,
-    config: {
-        responseMimeType: "application/json",
-        responseSchema: ParseResumeResponse
-    },    
-  });
+        const response = await ai.models.generateContent({
+            model: SELECTED_MODEL,
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: ParseResumeResponse
+            },
+        });
 
-  const json = JSON.parse(response.text ?? "{}");
+        const json = JSON.parse(response.text ?? "{}");
 
-  return { data: json }
+        return { data: json }
 
-  } catch (err: unknown) {
-    
-    if (err instanceof Error) {
-      throw err;
+    } catch (err: unknown) {
+
+        if (err instanceof ApiError) {
+            console.log("LLM ERROR MESSAGE: ", (err as ApiError).message)
+        }
+        if (err instanceof Error) {
+            console.log("ERROR HERE ERROR INSTANCE", err.message)
+            throw err;
+        }
+
+        throw new Error('AI generation failed');
     }
-
-    throw new Error('AI generation failed');
-  }
 }

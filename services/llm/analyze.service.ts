@@ -9,7 +9,7 @@ import { ActionResult } from "@/types/action.type";
 
 export async function analyzeCV(data: ParseResumeSchemaType): Promise<ActionResult<AnalysisSchemaType>> {
 
-  const prompt = `
+    const prompt = `
     TASK: Analyze the following parsed CV data based on the PRD criteria:
     
     1. Content Quality (40%): Check for quantifiable results (numbers/%) and action verbs.
@@ -29,32 +29,33 @@ export async function analyzeCV(data: ParseResumeSchemaType): Promise<ActionResu
     - Return the response strictly as JSON.
   `;
 
-  try {
-      const response = await ai.models.generateContent({
-    model: SELECTED_MODEL,
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: z.toJSONSchema(AnalysisSchema),
-      systemInstruction: 'You are an expert Technical Recruiter and ATS Specialist.',
-    },
-  });
+    try {
+        const response = await ai.models.generateContent({
+            model: SELECTED_MODEL,
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: z.toJSONSchema(AnalysisSchema),
+                systemInstruction: 'You are an expert Technical Recruiter and ATS Specialist.',
+            },
+        });
 
-  const json = JSON.parse(response.text ?? "{}");
+        const json = JSON.parse(response.text ?? "{}");
 
-  const parsed = AnalysisSchema.safeParse(json);
-  if (!parsed.success) {
-    throw new Error("AI response format not recognized");
-  }
+        const parsed = AnalysisSchema.safeParse(json);
+        if (!parsed.success) {
+            throw new Error("AI response format not recognized");
+        }
 
-  return { data: parsed.data };
+        return { data: parsed.data };
 
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw error;
+    } catch (error: unknown) {
+        console.log("ERROR HERE", error)
+        if (error instanceof Error) {
+            console.log("ERROR HERE ERROR INSTANCE", error)
+            throw error;
+        }
+
+        throw new Error('AI generation failed');
     }
-
-    throw new Error('AI generation failed');
-  }
-  
 }

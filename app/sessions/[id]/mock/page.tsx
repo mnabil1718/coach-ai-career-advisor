@@ -107,8 +107,6 @@ async function StepDecider({
             const { feedback: feedback2, interview: interviewFeed2 } =
                 await feedbackFetcher(sessionId, step, interviewId);
 
-            console.log("FEEDBACK", feedback2, "INTERVIEW FEED", interviewFeed2)
-
             return (
                 <FeedbackQA
                     interview={interviewFeed2}

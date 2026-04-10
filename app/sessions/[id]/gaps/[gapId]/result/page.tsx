@@ -13,6 +13,7 @@ import { validateData } from "@/utils/parse";
 import { CheckCircle2, XCircle, Star, Clock, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { FinishButton } from "./finish-button";
 
 export default async function GapResultPage({
     params,
@@ -151,11 +152,7 @@ export default async function GapResultPage({
                     {
                         session && session.status === "PENDING" ?
                             (
-                                <form action={finish}>
-                                    <Button type="submit" className="font-semibold px-4 py-2 rounded-full">
-                                        Finish Session
-                                    </Button>
-                                </form>
+                                <FinishButton id={id} />
                             ) :
                             (
                                 <Link href={"/dashboard"}>
