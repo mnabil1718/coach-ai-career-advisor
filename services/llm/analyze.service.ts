@@ -6,6 +6,7 @@ import { AnalysisSchema, AnalysisSchemaType } from "@/schema/analysis.schema";
 import { ParseResumeSchemaType } from "@/schema/resume.schema";
 import z from "zod";
 import { ActionResult } from "@/types/action.type";
+import { ApiError } from "@google/genai";
 
 export async function analyzeCV(data: ParseResumeSchemaType): Promise<ActionResult<AnalysisSchemaType>> {
 
@@ -50,9 +51,7 @@ export async function analyzeCV(data: ParseResumeSchemaType): Promise<ActionResu
         return { data: parsed.data };
 
     } catch (error: unknown) {
-        console.log("ERROR HERE", error)
         if (error instanceof Error) {
-            console.log("ERROR HERE ERROR INSTANCE", error)
             throw error;
         }
 

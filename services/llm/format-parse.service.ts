@@ -36,11 +36,7 @@ export async function formatParse(txt: string): Promise<ActionResult<ParseResume
 
     } catch (err: unknown) {
 
-        if (err instanceof ApiError) {
-            console.log("LLM ERROR MESSAGE: ", (err as ApiError).message)
-        }
         if (err instanceof Error) {
-            console.log("ERROR HERE ERROR INSTANCE", err.message)
             throw err;
         }
 
