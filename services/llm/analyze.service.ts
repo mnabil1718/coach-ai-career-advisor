@@ -51,6 +51,11 @@ export async function analyzeCV(data: ParseResumeSchemaType): Promise<ActionResu
         return { data: parsed.data };
 
     } catch (error: unknown) {
+        if (error instanceof ApiError) {
+            let msg = error.message;
+            throw new Error(msg);
+        }
+
         if (error instanceof Error) {
             throw error;
         }

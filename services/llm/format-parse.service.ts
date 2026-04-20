@@ -35,6 +35,10 @@ export async function formatParse(txt: string): Promise<ActionResult<ParseResume
         return { data: json }
 
     } catch (err: unknown) {
+        if (err instanceof ApiError) {
+            let msg = err.message;
+            throw new Error(msg);
+        }
 
         if (err instanceof Error) {
             throw err;

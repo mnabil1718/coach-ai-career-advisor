@@ -7,10 +7,11 @@ import { ActionResult } from "@/types/action.type";
 import { AnswerFeedBackRequest, FeedbackSchemaType, QuestionsArraySchemaType, RoleLevel } from "@/types/interview.type";
 import z from "zod";
 import { getInterviewWithRelations, saveInterviewResult } from "../interview/interview.service";
+import { ApiError } from "@google/genai";
 
 export async function generateQuestions(targetRole: string, targetRoleLevel: RoleLevel, cvData: unknown): Promise<ActionResult<QuestionsArraySchemaType>> {
 
-  const prompt = `
+    const prompt = `
     TASK: Generate 3 realistic interview questions for the role: "${targetRole}".
   
     CONTEXT:
@@ -26,40 +27,40 @@ export async function generateQuestions(targetRole: string, targetRoleLevel: Rol
     Return exactly 3 questions in the specified JSON format.
   `;
 
-  try {
-      const response = await ai.models.generateContent({
-    model: SELECTED_MODEL,
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: z.toJSONSchema(QuestionsArraySchema),
-      systemInstruction: `
+    try {
+        const response = await ai.models.generateContent({
+            model: SELECTED_MODEL,
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: z.toJSONSchema(QuestionsArraySchema),
+                systemInstruction: `
           You are an expert Technical Recruiter with experience hiring at top-tier tech companies (FAANG/MAANG). 
           Your goal is to generate high-quality, challenging, and relevant interview questions based on a candidate's CV and target role.`
-    },
-  });
+            },
+        });
 
-  const json = JSON.parse(response.text ?? "{}");
+        const json = JSON.parse(response.text ?? "{}");
 
-  const parsed = QuestionsArraySchema.safeParse(json);
-  if (!parsed.success) {
-    throw new Error("AI response format not recognized");
-  }
+        const parsed = QuestionsArraySchema.safeParse(json);
+        if (!parsed.success) {
+            throw new Error("AI response format not recognized");
+        }
 
-  return { data: parsed.data };
+        return { data: parsed.data };
 
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw error;
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            throw error;
+        }
+
+        throw new Error('AI generation failed');
     }
 
-    throw new Error('AI generation failed');
-  }
-  
 }
 
 export async function feedbackAnswer({ question, answer, targetRole, targetRoleLevel }: AnswerFeedBackRequest): Promise<ActionResult<FeedbackSchemaType>> {
-  const prompt = `
+    const prompt = `
   TASK: Act as an expert Interviewer. Analyze the user's answer to the following question.
   
   QUESTION: "${question.question}"
@@ -86,54 +87,54 @@ export async function feedbackAnswer({ question, answer, targetRole, targetRoleL
     - Use bold text for key achievements or metrics.
   `;
 
-  try {
-      const response = await ai.models.generateContent({
-    model: SELECTED_MODEL,
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: z.toJSONSchema(FeedbackSchema),
-      systemInstruction: "You are an expert Interviewer at big multinational company (FAANG/MAANG). Analyze the user's answer to the following question."
-    },
-  });
+    try {
+        const response = await ai.models.generateContent({
+            model: SELECTED_MODEL,
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: z.toJSONSchema(FeedbackSchema),
+                systemInstruction: "You are an expert Interviewer at big multinational company (FAANG/MAANG). Analyze the user's answer to the following question."
+            },
+        });
 
-  const json = JSON.parse(response.text ?? "{}");
+        const json = JSON.parse(response.text ?? "{}");
 
-  if (json.suggestedAnswer) {
-    json.suggestedAnswer = json.suggestedAnswer
-      .replace(/\n(?!\n)/g, "\n\n") // Replace single \n with \n\n
-      .trim();
-  }
+        if (json.suggestedAnswer) {
+            json.suggestedAnswer = json.suggestedAnswer
+                .replace(/\n(?!\n)/g, "\n\n") // Replace single \n with \n\n
+                .trim();
+        }
 
-  const parsed = FeedbackSchema.safeParse(json);
-  if (!parsed.success) {
-    throw new Error("AI response format not recognized");
-  }
+        const parsed = FeedbackSchema.safeParse(json);
+        if (!parsed.success) {
+            throw new Error("AI response format not recognized");
+        }
 
-  return { data: parsed.data };
+        return { data: parsed.data };
 
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw error;
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            throw error;
+        }
+
+        throw new Error('AI generation failed');
     }
 
-    throw new Error('AI generation failed');
-  }
-  
 }
 
 export async function generateOverallFeedback(interviewId: string): Promise<ActionResult<FeedbackSchemaType>> {
-  try {
+    try {
 
-    const context = await getInterviewWithRelations(interviewId);
-    
-    const sessionHistory = context.interview_qas.map((qa, i) => `
+        const context = await getInterviewWithRelations(interviewId);
+
+        const sessionHistory = context.interview_qas.map((qa, i) => `
       QUESTION ${i + 1}: ${qa.question}
       ANSWER: ${qa.answer ?? "No answer provided"}
       INDIVIDUAL FEEDBACK: ${JSON.stringify(qa.feedback)}
     `).join("\n---\n");
 
-    const prompt = `
+        const prompt = `
       TASK: Provide a final summary and overall score for the interview.
       TARGET ROLE: ${context.target_role}
       LEVEL: ${context.target_role_level}
@@ -147,31 +148,36 @@ export async function generateOverallFeedback(interviewId: string): Promise<Acti
       - In "suggestedAnswer", provide a "Roadmap for Improvement" based on their performance across all questions.
     `;
 
-    const response = await ai.models.generateContent({
-      model: SELECTED_MODEL,
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: z.toJSONSchema(FeedbackSchema),
-        systemInstruction: "You are a Senior Hiring Manager. Provide a final decision-style evaluation."
-      },
-    });
+        const response = await ai.models.generateContent({
+            model: SELECTED_MODEL,
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: z.toJSONSchema(FeedbackSchema),
+                systemInstruction: "You are a Senior Hiring Manager. Provide a final decision-style evaluation."
+            },
+        });
 
-    const json = JSON.parse(response.text ?? "{}");
-    const parsed = FeedbackSchema.safeParse(json);
-    
-    if (!parsed.success) throw new Error("AI evaluation failed");
+        const json = JSON.parse(response.text ?? "{}");
+        const parsed = FeedbackSchema.safeParse(json);
 
-    await saveInterviewResult(interviewId, parsed.data);
+        if (!parsed.success) throw new Error("AI evaluation failed");
 
-    return { data: parsed.data };
+        await saveInterviewResult(interviewId, parsed.data);
 
-  } catch (error: unknown) {
+        return { data: parsed.data };
 
-    if (error instanceof Error) {
-      throw error;
+    } catch (error: unknown) {
+
+        if (error instanceof ApiError) {
+            let msg = error.message;
+            throw new Error(msg);
+        }
+
+        if (error instanceof Error) {
+            throw error;
+        }
+
+        throw new Error('AI generation failed');
     }
-
-    throw new Error('AI generation failed');
-  }
 }
